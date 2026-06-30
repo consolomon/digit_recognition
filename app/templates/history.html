@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>History — MNIST Milestones</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="nav-brand">Digit Recognition</a>
+        <div class="nav-tabs">
+            <a href="/stage1/" class="nav-tab">Stage 1</a>
+            <a href="/stage2/" class="nav-tab">Stage 2</a>
+            <a href="/stage3/" class="nav-tab">Stage 3</a>
+            <a href="/history/" class="nav-tab active">History</a>
+        </div>
+    </nav>
+
+    <main class="stage-main">
+        <div id="dashboard-root" style="width: 100%;"></div>
+    </main>
+
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/prop-types@15/prop-types.min.js"></script>
+    <script src="https://unpkg.com/recharts@2/umd/Recharts.js"></script>
+    <script src="{{ url_for('static', filename='history.js') }}"></script>
+</body>
+</html>

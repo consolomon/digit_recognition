@@ -1,0 +1,30 @@
+services:
+
+  digit_recognition:
+    image: digit_recognition:latest
+    container_name: digit_recognition-app
+    restart: unless-stopped
+    ports:
+      - 8001:8001
+
+  nginx:
+    image: nginx:alpine
+    container_name: digit_recognition-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./nginx/certbot/conf:/etc/letsencrypt:ro
+      - ./nginx/certbot/www:/var/www/html:ro
+    depends_on:
+      - digit_recognition
+
+  certbot:
+    image: certbot/certbot
+    container_name: digit_recognition-certbot
+    volumes:
+      - ./nginx/certbot/conf:/etc/letsencrypt:rw
+      - ./nginx/certbot/www:/var/www/html:rw
+    command: certonly --webroot -w /var/www/html/ --force-renewal --email example@mail.net -d example.net --agree-tos

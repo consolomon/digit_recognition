@@ -1,0 +1,5 @@
+flask
+numpy
+beartype
+pillow
+gunicorn

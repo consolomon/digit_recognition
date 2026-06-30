@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Digit Recognition</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="nav-brand">Digit Recognition</a>
+        <div class="nav-tabs">
+            <a href="/stage1/" class="nav-tab">Stage 1</a>
+            <a href="/stage2/" class="nav-tab">Stage 2</a>
+            <a href="/stage3/" class="nav-tab">Stage 3</a>
+            <a href="/history/" class="nav-tab">History</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>Neural Networks &amp;<br>Digit Recognition</h1>
+        <p class="hero-body lead">
+            Neural networks are already part of our lives: they manage our calendars, write emails for us,
+            control transportation, help invent medicines, and so on. Understanding how they work from
+            the inside will protect you from misconceptions, improve your AI usage experience, and give you a solid
+            advantage on your way to good work or study in the future.
+        </p>
+        <p class="hero-body">
+            This app guides you from simple binary classification to full digit recognition trained on
+            the MNIST dataset.
+        </p>
+    </section>
+
+    <section class="stages-section" id="stages">
+        <hr class="section-rule">
+        <p class="section-label">Three Stages</p>
+        <div class="stages-overview">
+
+            <div class="stage-card">
+                <span class="stage-num">Stage 01</span>
+                <h2>Binary Classification</h2>
+                <p>Classify a zero or one drawn on a <strong>3×3 pixel grid</strong> — the simplest form of image recognition.</p>
+                <a href="/stage1/" class="btn">Try Stage 1</a>
+            </div>
+
+            <div class="stage-card">
+                <span class="stage-num">Stage 02</span>
+                <h2>Digit Recognition</h2>
+                <p>Recognize any digit from 0 to 9 drawn on a <strong>5×3 pixel grid</strong> — a step up in complexity.</p>
+                <a href="/stage2/" class="btn">Try Stage 2</a>
+            </div>
+
+            <div class="stage-card">
+                <span class="stage-num">Stage 03</span>
+                <h2>MNIST Recognition</h2>
+                <p>Full digit recognition on a <strong>28×28 pixel canvas</strong>, trained on the real MNIST dataset.</p>
+                <a href="/stage3/" class="btn">Try Stage 3</a>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

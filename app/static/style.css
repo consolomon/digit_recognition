@@ -1,0 +1,353 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg:           #06070e;
+    --surface:      #0c0f1a;
+    --card:         #0f1323;
+    --border:       rgba(255, 255, 255, 0.06);
+    --border-blue:  rgba(56, 189, 248, 0.20);
+    --blue:         #38bdf8;
+    --blue-dim:     rgba(56, 189, 248, 0.08);
+    --text:         #e8edf5;
+    --muted:        #7c8a9e;
+    --tile-off:     #111111;
+    --tile-on:      #ffffff;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ── Navbar ── */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 60px;
+    background: rgba(6, 7, 14, 0.82);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-brand {
+    font-weight: 700;
+    font-size: 0.88rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text);
+    text-decoration: none;
+}
+
+.nav-tabs {
+    display: flex;
+    gap: 0.15rem;
+}
+
+.nav-tab {
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0.38rem 0.9rem;
+    border-radius: 5px;
+    font-size: 0.84rem;
+    font-weight: 500;
+    transition: color 0.12s, background 0.12s;
+}
+
+.nav-tab:hover {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.nav-tab.active {
+    color: var(--blue);
+    background: var(--blue-dim);
+}
+
+/* ── Shared button base ── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.55rem 1.3rem;
+    border-radius: 6px;
+    font-size: 0.86rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid var(--border-blue);
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.btn:hover {
+    background: var(--blue-dim);
+    border-color: var(--blue);
+}
+
+.btn-primary {
+    background: var(--blue);
+    color: #06070e;
+    border-color: var(--blue);
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background: #7dd3fc;
+    border-color: #7dd3fc;
+    color: #06070e;
+}
+
+/* ── Landing: Hero ── */
+.hero {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 6rem 1.5rem 2.8rem;
+    text-align: center;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.28rem 0.85rem;
+    background: var(--blue-dim);
+    border: 1px solid var(--border-blue);
+    border-radius: 999px;
+    font-size: 0.71rem;
+    font-weight: 600;
+    color: var(--blue);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1.6rem;
+}
+
+.hero h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    margin-bottom: 3.67rem;
+}
+
+.hero-body {
+    color: var(--muted);
+    font-size: 0.97rem;
+    line-height: 1.8;
+    margin-bottom: 0.7rem;
+    max-width: 580px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-body.lead {
+    color: #aab4c4;
+    font-size: 1.02rem;
+    margin-bottom: 3.67rem;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 2.25rem;
+    flex-wrap: wrap;
+}
+
+/* ── Landing: Stages section ── */
+.stages-section {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.5rem 5rem;
+}
+
+.section-rule {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin-bottom: 3rem;
+}
+
+.section-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 1.25rem;
+}
+
+.stages-overview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.stage-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--blue);
+    border-radius: 8px;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.stage-num {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--blue);
+    text-transform: uppercase;
+}
+
+.stage-card h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.stage-card p {
+    color: var(--muted);
+    font-size: 0.86rem;
+    line-height: 1.65;
+    flex: 1;
+}
+
+/* ── Stage pages ── */
+.stage-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 1.5rem;
+    gap: 1rem;
+}
+
+.stage-main h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.stage-desc {
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+/* ── Stage layout: grid box + side panel ── */
+.stage-layout {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.stage-layout .box {
+    margin-top: 0;
+}
+
+.side-menu {
+    padding: 1.25rem 1rem;
+    justify-content: flex-start;
+}
+
+/* ── Box (stage canvases) ── */
+.box {
+    background: #13182c;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+/* ── 3×3 Grid ── */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 60px);
+    grid-template-rows: repeat(3, 60px);
+    border: 1px solid var(--border-blue);
+}
+
+.tile {
+    width: 60px;
+    height: 60px;
+    background: var(--tile-off);
+    border: 1px solid var(--border-blue);
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.tile:not(.on):hover {
+    background: #222222;
+}
+
+.tile.on {
+    background: var(--tile-on);
+}
+
+/* ── Recognize button ── */
+.recognize-btn {
+    font-size: 0.92rem;
+    padding: 0.6rem 2rem;
+    letter-spacing: 0.02em;
+}
+
+/* ── Refresh button ── */
+.refresh-btn {
+    font-size: 0.92rem;
+    padding: 0.6rem 2rem;
+    letter-spacing: 0.02em;
+    border: none;
+}
+
+.refresh-btn:hover {
+    border: none;
+}
+
+/* ── Standalone result box ── */
+.result-box {
+    min-width: 260px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.1rem 1.6rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+    line-height: 1.9;
+    visibility: hidden;
+}
+
+.result-box:not(:empty) {
+    visibility: visible;
+}
+
+.result-row {
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+}
+
+/* ── Stage 3 draw canvas ── */
+.draw-canvas {
+    display: block;
+    border-radius: 4px;
+    cursor: crosshair;
+    touch-action: none;
+}
