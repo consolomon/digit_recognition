@@ -11,6 +11,8 @@ original UI:
 Source of truth: `app/static/style.css` and
 `resources/documentation/DESIGN_SYSTEM.md` in `consolomon/digit_recognition`.
 
+**Status:** shipped in 1.1.11 (backlog item B-10). `master`, `dev` and `deploy` are at 1.1.12.
+
 ## Principles
 
 1. **One signal.** `accent` (#38bdf8) is the only hue in the interface. It
@@ -52,6 +54,12 @@ button's label.
   - the sticky navbar (`nav-height` 64);
   - the page content;
   - the partners footer, pushed to the bottom on short pages.
+- **Scrollbar:** the scroll window's scrollbar is **hidden permanently** (owner,
+  after the manual test, 1.1.11).
+  - Wheel, touch and keyboard still scroll.
+  - `tabindex="-1" autofocus` on the window lets Page Down, Space and the
+    arrow keys work without a first click.
+  - Never bring a visible scrollbar back to the shell.
 - **Stage pages:** use a wrapping workspace row: input panel, controls
   panel, output panel. Each takes the full width on phones (≤ 640px).
 
@@ -99,5 +107,6 @@ These are CSS components (class names from the app); there is no JS bundle.
   `frame-inset`, `fs-display`, `fs-title`) aren't representable as
   tokens. They're described above.
 - **Shell rules left out:** the fixed-frame shell rules (`body` overflow,
-  `.frame`, `.viewport`) stay out of `bundle.css` so previews render.
-  PageShell's preview draws the frame statically.
+  `.frame`, `.viewport` including the hidden scrollbar) stay out of
+  `bundle.css` so previews render. PageShell's preview draws the frame
+  statically.

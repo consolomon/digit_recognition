@@ -237,4 +237,6 @@ Re-sync the mirrors after a change.
 
 | Version | Change |
 |---|---|
+| 1.1.13 | Mirrors re-synced to 1.1.12: the shell's hidden scrollbar and the shipped status. Updated in the claude.ai Design System (README, PageShell, `tokens.json` ref `master@54d715a`), on the Figma library header and Templates note, and on the Miro Sandbox (PageShell, shell diagram, Status, overview card). Standalone Claude Design (`DesignSync`) not checked: it needs `/design-login` first. |
+| 1.1.11 | Scroll window scrollbar hidden permanently; `tabindex="-1" autofocus` for keyboard scrolling (owner, after the manual test). |
 | 1.1.x (B-10) | Draft 0.1: tokens, shell (frame + scroll window + network A), navbar tabs, buttons (3 variants), stage card, tile grid, draw canvas, controls panel, output panel, partners footer, History chrome. The owner's 6 correction rounds on the draft canvas are folded in. |
