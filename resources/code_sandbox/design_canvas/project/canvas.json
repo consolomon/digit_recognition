@@ -1,0 +1,21 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-10-17T13:10:00Z"},
+  "title": "Digit Recognition — page redesign draft",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 1280, "h": 1900, "title": "Design system draft — Signal on Black"},
+    "Landing.dc.html": {"x": 1360, "y": 0, "w": 1280, "h": 1600, "title": "/ — Landing", "expand": "fill"},
+    "Stage1.dc.html": {"x": 2720, "y": 0, "w": 1280, "h": 1000, "title": "/stage1/ — Binary Classification", "expand": "fill", "is_interactive": true},
+    "Stage2.dc.html": {"x": 4080, "y": 0, "w": 1280, "h": 1080, "title": "/stage2/ — Digit Recognition", "expand": "fill", "is_interactive": true},
+    "Stage3.dc.html": {"x": 5440, "y": 0, "w": 1280, "h": 1040, "title": "/stage3/ — MNIST canvas", "expand": "fill"},
+    "History.dc.html": {"x": 6800, "y": 0, "w": 1280, "h": 1900, "title": "/history/ — MNIST milestones", "expand": "fill"}
+  },
+  "order": ["Main.dc.html", "Landing.dc.html", "Stage1.dc.html", "Stage2.dc.html", "Stage3.dc.html", "History.dc.html"],
+  "notes": {
+    "rowtitle": {"x": 0, "y": -300, "text": "Digit Recognition — redesign draft (poster × app v1.0)", "kind": "title1", "maxW": 8080},
+    "howto": {"x": 0, "y": -150, "text": "Each page has Tweaks: background = image | svg | none, frame on/off. Pick one background after review.", "w": 900, "maxH": 90, "fill": "blue"}
+  },
+  "designSystems": []
+}

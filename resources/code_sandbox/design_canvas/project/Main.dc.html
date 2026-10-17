@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Design system draft — Signal on Black</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#000000}
+a{color:#ffffff}a:hover{color:#38bdf8}
+.tab{color:#c7c7c7;text-decoration:underline;text-decoration-color:#4c4c4c;text-decoration-thickness:1px;text-underline-offset:7px}
+.tab:hover{color:#ffffff;text-decoration-color:#ffffff}
+.tab-active{color:#38bdf8;text-decoration-color:#38bdf8;text-decoration-thickness:2px}
+.btn{font-family:inherit;font-size:14px;letter-spacing:.02em;padding:0 22px;height:44px;display:inline-flex;align-items:center;border-radius:2px;border:1px solid #4c4c4c;background:#000000;color:#ffffff;cursor:pointer;text-decoration:none}
+.btn:hover,.btn-hover{border-color:#38bdf8;color:#38bdf8}
+.btn-primary{background:#38bdf8;border-color:#38bdf8;color:#000000;font-weight:600}
+.btn-primary:hover{background:#7dd3fc;border-color:#7dd3fc;color:#000000}
+.btn-ghost{border-color:transparent;color:#8f8f8f;text-decoration:underline;text-underline-offset:6px;text-decoration-color:#4c4c4c}
+.btn-ghost:hover{border-color:transparent;color:#ffffff;text-decoration-color:#ffffff}
+.meta{color:#ffffff;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:8px}
+.meta:hover{color:#38bdf8}
+.bgA{background:#000000 url(/_blob/92a06f857642bbb3e21e56cd64b73fb9) no-repeat center bottom/100% auto}
+.bgB{background:#000000 url(/_blob/dee011ae0935568c884175fee17252f0) no-repeat center bottom/100% auto}
+</style>
+</helmet>
+<div style="width: 1280px; min-height: 1900px; box-sizing: border-box; padding: 72px 80px; background: #000000; color: #ffffff; font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace; position: relative; display: flex; flex-direction: column; gap: 64px">
+  <div style="position: absolute; inset: 20px; border: 2px solid #ffffff; pointer-events: none"></div>
+
+  <header style="display: flex; justify-content: space-between; align-items: flex-start; gap: 48px">
+    <div style="display: flex; flex-direction: column; gap: 16px">
+      <p style="margin: 0; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #38bdf8">Design system · draft 0.1</p>
+      <h1 style="margin: 0; font-size: 49px; line-height: 1.15; font-weight: 400; letter-spacing: -.01em">Signal on Black</h1>
+      <p style="margin: 0; max-width: 560px; font-size: 16px; line-height: 1.7; color: #c7c7c7">The lecture poster's achromatic field, white monospace type and particle network, merged with the app's single sky-blue accent. Colour appears only where something is active, selected or primary.</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 14px; font-size: 16px; padding-top: 30px">
+      <span class="meta">source: poster PSD + app 1.0</span>
+      <span class="meta">font: JetBrains Mono</span>
+      <span class="meta">accent: #38bdf8 (one)</span>
+    </div>
+  </header>
+
+  <section style="display: flex; flex-direction: column; gap: 20px">
+    <p style="margin: 0; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #8f8f8f">01 · Colour</p>
+    <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px">
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 88px; background: #000000; border: 1px solid #303030"></div><span style="font-size: 13px">--bg</span><span style="font-size: 12px; color: #8f8f8f">#000000 · page field</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 88px; background: #0d0d0d; border: 1px solid #303030"></div><span style="font-size: 13px">--field</span><span style="font-size: 12px; color: #8f8f8f">#0d0d0d · tile off, panels</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 88px; background: #171717"></div><span style="font-size: 13px">--g1</span><span style="font-size: 12px; color: #8f8f8f">#171717 · hover fill</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 88px; background: #303030"></div><span style="font-size: 13px">--line</span><span style="font-size: 12px; color: #8f8f8f">#303030 · hairlines</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 88px; background: #4c4c4c"></div><span style="font-size: 13px">--line-strong</span><span style="font-size: 12px; color: #8f8f8f">#4c4c4c · borders</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 88px; background: #8f8f8f"></div><span style="font-size: 13px">--muted</span><span style="font-size: 12px; color: #8f8f8f">#8f8f8f · secondary text</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 88px; background: #c7c7c7"></div><span style="font-size: 13px">--soft</span><span style="font-size: 12px; color: #8f8f8f">#c7c7c7 · body text</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 88px; background: #ffffff"></div><span style="font-size: 13px">--ink</span><span style="font-size: 12px; color: #8f8f8f">#ffffff · headings, tile on</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 88px; background: #38bdf8"></div><span style="font-size: 13px; color: #38bdf8">--accent</span><span style="font-size: 12px; color: #8f8f8f">#38bdf8 · the only hue</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 88px; background: #7dd3fc"></div><span style="font-size: 13px">--accent-hover</span><span style="font-size: 12px; color: #8f8f8f">#7dd3fc · primary hover</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 88px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35)"></div><span style="font-size: 13px">--accent-dim</span><span style="font-size: 12px; color: #8f8f8f">12% · selected fills</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 88px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr))"><div style="background: #818cf8"></div><div style="background: #f59e0b"></div><div style="background: #10b981"></div><div style="background: #ec4899"></div></div><span style="font-size: 13px">data-viz</span><span style="font-size: 12px; color: #8f8f8f">History categories only</span></div>
+    </div>
+  </section>
+
+  <section style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px">
+    <div style="display: flex; flex-direction: column; gap: 20px">
+      <p style="margin: 0; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #8f8f8f">02 · Type — JetBrains Mono, ratio 1.25</p>
+      <div style="display: flex; align-items: baseline; gap: 24px; border-bottom: 1px solid #303030; padding-bottom: 12px"><span style="width: 96px; font-size: 12px; color: #8f8f8f">49 / 400</span><span style="font-size: 49px; line-height: 1.1">Display</span></div>
+      <div style="display: flex; align-items: baseline; gap: 24px; border-bottom: 1px solid #303030; padding-bottom: 12px"><span style="width: 96px; font-size: 12px; color: #8f8f8f">31 / 400</span><span style="font-size: 31px">Page title</span></div>
+      <div style="display: flex; align-items: baseline; gap: 24px; border-bottom: 1px solid #303030; padding-bottom: 12px"><span style="width: 96px; font-size: 12px; color: #8f8f8f">20 / 500</span><span style="font-size: 20px; font-weight: 500">Card heading</span></div>
+      <div style="display: flex; align-items: baseline; gap: 24px; border-bottom: 1px solid #303030; padding-bottom: 12px"><span style="width: 96px; font-size: 12px; color: #8f8f8f">16 / 400</span><span style="font-size: 16px; color: #c7c7c7">Body text, line-height 1.7</span></div>
+      <div style="display: flex; align-items: baseline; gap: 24px; border-bottom: 1px solid #303030; padding-bottom: 12px"><span style="width: 96px; font-size: 12px; color: #8f8f8f">14 / 400</span><span style="font-size: 14px">Buttons, tabs, results</span></div>
+      <div style="display: flex; align-items: baseline; gap: 24px"><span style="width: 96px; font-size: 12px; color: #8f8f8f">12 / 500</span><span style="font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #38bdf8">Section label</span></div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 20px">
+      <p style="margin: 0; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #8f8f8f">03 · Frame and spacing</p>
+      <div style="position: relative; height: 230px; background: #0d0d0d">
+        <div style="position: absolute; inset: 12px; border: 2px solid #ffffff"></div>
+        <span style="position: absolute; left: 36px; top: 36px; font-size: 14px">2px white frame, inset 20px (12px on phones)</span>
+        <span style="position: absolute; left: 36px; top: 66px; font-size: 12px; color: #8f8f8f">fixed to the viewport, above the background, below content</span>
+        <span style="position: absolute; left: 36px; bottom: 36px; font-size: 12px; color: #8f8f8f">spacing scale 4 · 8 · 12 · 16 · 24 · 32 · 48 · 64 · 96</span>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: flex-end">
+        <div style="width: 4px; height: 4px; background: #4c4c4c"></div><div style="width: 8px; height: 8px; background: #4c4c4c"></div><div style="width: 12px; height: 12px; background: #4c4c4c"></div><div style="width: 16px; height: 16px; background: #4c4c4c"></div><div style="width: 24px; height: 24px; background: #4c4c4c"></div><div style="width: 32px; height: 32px; background: #4c4c4c"></div><div style="width: 48px; height: 48px; background: #4c4c4c"></div><div style="width: 64px; height: 64px; background: #4c4c4c"></div><div style="width: 96px; height: 96px; background: #4c4c4c"></div>
+      </div>
+      <p style="margin: 0; font-size: 12px; color: #8f8f8f; line-height: 1.6">Corners: 0 for tiles, canvas, cards; 2px for buttons. No shadows, no gradients — depth comes from grey steps.</p>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 24px">
+    <p style="margin: 0; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #8f8f8f">04 · Components</p>
+    <div style="display: flex; justify-content: space-between; align-items: center; height: 64px; padding: 0 28px; border-bottom: 1px solid #303030; background: #000000">
+      <a href="#" style="font-size: 14px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: #ffffff; text-decoration: none">Digit Recognition</a>
+      <nav style="display: flex; gap: 28px; font-size: 14px">
+        <a href="#" class="tab">Stage 1</a><a href="#" class="tab tab-active">Stage 2</a><a href="#" class="tab">Stage 3</a><a href="#" class="tab">History</a>
+      </nav>
+    </div>
+    <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap">
+      <button class="btn" type="button">Recognize</button>
+      <button class="btn btn-hover" type="button">Hover</button>
+      <button class="btn btn-primary" type="button">Recognize</button>
+      <button class="btn btn-ghost" type="button">Refresh</button>
+      <span style="font-size: 12px; color: #8f8f8f; margin-left: 12px">default · hover · primary · ghost — 44px tall</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: start">
+      <div style="display: flex; flex-direction: column; gap: 12px; padding: 28px; background: #000000; border: 1px solid #303030">
+        <span style="font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #38bdf8">Stage 02</span>
+        <h3 style="margin: 0; font-size: 20px; font-weight: 500">Card</h3>
+        <p style="margin: 0; font-size: 14px; line-height: 1.7; color: #8f8f8f">Black on the network, hairline border, no radius.</p>
+      </div>
+      <div style="display: flex; gap: 24px; align-items: center">
+        <div style="display: grid; grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(3, 44px); border: 1px solid #4c4c4c">
+          <div style="background: #0d0d0d; border: 1px solid #303030"></div><div style="background: #ffffff; border: 1px solid #303030"></div><div style="background: #0d0d0d; border: 1px solid #303030"></div>
+          <div style="background: #171717; border: 1px solid #303030"></div><div style="background: #ffffff; border: 1px solid #303030"></div><div style="background: #0d0d0d; border: 1px solid #303030"></div>
+          <div style="background: #0d0d0d; border: 1px solid #303030"></div><div style="background: #ffffff; border: 1px solid #303030"></div><div style="background: #0d0d0d; border: 1px solid #303030"></div>
+        </div>
+        <span style="font-size: 12px; color: #8f8f8f; line-height: 1.7">tiles<br>off #0d0d0d<br>hover #171717<br>on #ffffff</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div style="padding: 16px 20px; border: 1px solid #303030; background: #000000; font-size: 14px; line-height: 1.8">
+          <span style="display: block; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #8f8f8f">Output</span>
+          <span style="color: #8f8f8f">awaiting input</span>
+        </div>
+        <div style="padding: 16px 20px; border: 1px solid #38bdf8; background: #000000; font-size: 14px; line-height: 1.8">
+          <span style="display: block; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #38bdf8">Output</span>
+          <span>This digit is: 7    Probability: 94%</span>
+        </div>
+      </div>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 28px 0 0; border-top: 1px solid #303030">
+      <div style="display: flex; gap: 20px; align-items: center">
+        <img src="/_blob/c0a1501716f131c78b44d11483c83e85" alt="Sreda obitaniya logo" style="width: 64px; height: 64px; display: block">
+        <div style="display: flex; flex-direction: column; gap: 6px; font-size: 16px"><span>Среда обитания</span><span class="meta" style="color: #c7c7c7">@obitaniya_sreda</span></div>
+      </div>
+      <div style="display: flex; gap: 20px; align-items: center">
+        <img src="/_blob/427f384a5ffa9f545d5e99a575ee069e" alt="Tech.ProSvet logo" style="width: 64px; height: 64px; display: block">
+        <div style="display: flex; flex-direction: column; gap: 6px; font-size: 16px"><span>Tech.ProSvet</span><span class="meta" style="color: #c7c7c7">@tech_illumination</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 20px">
+    <p style="margin: 0; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #8f8f8f">05 · Background — choose one</p>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div class="bgA" style="height: 300px; border: 1px solid #303030"></div>
+        <span style="font-size: 14px">A · poster network image</span>
+        <span style="font-size: 12px; color: #8f8f8f; line-height: 1.6">From the PSD, levelled to pure black. WebP 86 KB, raster — soft, photographic depth.</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div class="bgB" style="height: 300px; border: 1px solid #303030"></div>
+        <span style="font-size: 14px">B · generated SVG network</span>
+        <span style="font-size: 12px; color: #8f8f8f; line-height: 1.6">505 nodes, 3 depth layers, seed 28. SVG 49 KB — crisp at any width, recolourable.</span>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

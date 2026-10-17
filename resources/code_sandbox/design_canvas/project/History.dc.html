@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>History — MNIST Milestones</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#000000}
+a{color:#ffffff}a:hover{color:#38bdf8}
+.bg-image{background:#000000 url(/_blob/92a06f857642bbb3e21e56cd64b73fb9) no-repeat center bottom/100% auto fixed}
+.bg-svg{background:#000000 url(/_blob/dee011ae0935568c884175fee17252f0) no-repeat center bottom/100% auto fixed}
+.bg-none{background:#000000}
+.tab{color:#c7c7c7;text-decoration:underline;text-decoration-color:#4c4c4c;text-decoration-thickness:1px;text-underline-offset:7px}
+.tab:hover{color:#ffffff;text-decoration-color:#ffffff}
+.tab-active{color:#38bdf8;text-decoration-color:#38bdf8;text-decoration-thickness:2px}
+.row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 20px;border:1px solid #303030;background:#000000;cursor:pointer}
+.row:hover{border-color:#616161}
+.src{color:#8f8f8f;text-decoration:underline;text-underline-offset:4px}
+.src:hover{color:#ffffff}
+</style>
+</helmet>
+<div class="bg-{{bg}}" style="min-height: 1900px; color: #ffffff; font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column">
+  <sc-if value="{{frame}}" hint-placeholder-val="{{ true }}"><div style="position: fixed; inset: 20px; border: 2px solid #ffffff; pointer-events: none; z-index: 20"></div></sc-if>
+
+  <nav style="position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; min-height: 64px; padding: 20px 56px 0; box-sizing: border-box; background: #000000; border-bottom: 1px solid #303030">
+    <a href="Landing.dc.html" style="font-size: 14px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: #ffffff; text-decoration: none; padding: 20px 0">Digit Recognition</a>
+    <div style="display: flex; flex-wrap: wrap; gap: 28px; font-size: 14px">
+      <a href="Stage1.dc.html" class="tab">Stage 1</a>
+      <a href="Stage2.dc.html" class="tab">Stage 2</a>
+      <a href="Stage3.dc.html" class="tab">Stage 3</a>
+      <a href="History.dc.html" class="tab tab-active" aria-current="page">History</a>
+    </div>
+  </nav>
+
+  <main style="flex: 1; width: 100%; max-width: 1012px; margin: 0 auto; padding: 72px 56px 96px; box-sizing: border-box; display: flex; flex-direction: column; gap: 36px">
+    <header style="display: flex; flex-direction: column; gap: 14px">
+      <span style="font-size: 12px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: #38bdf8">History</span>
+      <h1 style="margin: 0; font-size: 31px; font-weight: 400; line-height: 1.2">MNIST Error Rate Milestones</h1>
+      <p style="margin: 0; max-width: 720px; font-size: 14px; line-height: 1.7; color: #8f8f8f">How digit recognition error on the MNIST benchmark fell from an 0.80% SVM baseline (LeCun et al. 1998) to near-perfect 0.09% (An et al. 2020), crossing estimated human-level performance (≈0.20%) in 2011. Each milestone card links to its primary source.</p>
+    </header>
+
+    <figure style="margin: 0; padding: 28px 20px 16px; background: #000000; border: 1px solid #303030; display: flex; flex-direction: column; gap: 8px">
+      <svg viewBox="0 0 960 370" style="width: 100%; height: auto; display: block" role="img" aria-label="Line chart of MNIST test error rate by year, 1998 to 2020">
+        <g stroke="#ffffff" stroke-opacity="0.08" stroke-dasharray="3 3">
+          <line x1="64" y1="30" x2="940" y2="30"></line><line x1="64" y1="90" x2="940" y2="90"></line><line x1="64" y1="150" x2="940" y2="150"></line><line x1="64" y1="210" x2="940" y2="210"></line><line x1="64" y1="270" x2="940" y2="270"></line>
+        </g>
+        <line x1="64" y1="330" x2="940" y2="330" stroke="#4c4c4c"></line>
+        <line x1="64" y1="30" x2="64" y2="330" stroke="#4c4c4c"></line>
+        <g fill="#8f8f8f" font-size="12" font-family="JetBrains Mono, monospace" text-anchor="end">
+          <text x="56" y="334">0%</text><text x="56" y="274">0.25%</text><text x="56" y="214">0.5%</text><text x="56" y="154">0.75%</text><text x="56" y="94">1%</text><text x="56" y="34">1.25%</text>
+        </g>
+        <g fill="#8f8f8f" font-size="12" font-family="JetBrains Mono, monospace" text-anchor="middle">
+          <text x="129" y="352">1998</text><text x="291" y="352">2003</text><text x="388" y="352">2006</text><text x="510" y="352">2010</text><text x="558" y="352">2011</text><text x="843" y="352">2020</text>
+        </g>
+        <line x1="64" y1="282" x2="940" y2="282" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="6 4"></line>
+        <text x="936" y="274" fill="#ef4444" font-size="12" font-weight="600" font-family="JetBrains Mono, monospace" text-anchor="end">≈ Human level (0.2%)</text>
+        <polyline points="129,138 291,234 388,42 388,236 518,246 551,282 843,289 843,308" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linejoin="round"></polyline>
+        <text x="402" y="46" fill="#f59e0b" font-size="12" font-family="JetBrains Mono, monospace">← DBN (1.2%, no deformations)</text>
+        <circle cx="129" cy="138" r="6" fill="#818cf8" stroke="#000000" stroke-width="2"></circle>
+        <circle cx="291" cy="234" r="6" fill="#0ea5e9" stroke="#000000" stroke-width="2"></circle>
+        <circle cx="388" cy="42" r="6" fill="#f59e0b" stroke="#000000" stroke-width="2"></circle>
+        <circle cx="388" cy="236" r="6" fill="#0ea5e9" stroke="#000000" stroke-width="2"></circle>
+        <circle cx="518" cy="246" r="6" fill="#10b981" stroke="#000000" stroke-width="2"></circle>
+        <circle cx="551" cy="282" r="8" fill="#ffffff" stroke="#ef4444" stroke-width="3"></circle>
+        <circle cx="843" cy="289" r="6" fill="#ec4899" stroke="#000000" stroke-width="2"></circle>
+        <circle cx="843" cy="308" r="6" fill="#06b6d4" stroke="#000000" stroke-width="2"></circle>
+      </svg>
+      <figcaption style="text-align: center; font-size: 12px; color: #8f8f8f">Hover or tap data points for details. The dashed red line marks approximate human-level performance.</figcaption>
+    </figure>
+
+    <section style="display: flex; flex-direction: column; gap: 12px">
+      <h2 style="margin: 0 0 8px; font-size: 16px; font-weight: 500">Milestone Details</h2>
+      <sc-for list="{{rows}}" as="m" hint-placeholder-count="11">
+        <div class="row">
+          <span style="width: 10px; height: 10px; border-radius: 50%; background: {{m.color}}; flex-shrink: 0"></span>
+          <span style="font-weight: 600; font-size: 15px">{{m.year}}</span>
+          <span style="color: #c7c7c7; font-size: 14px">{{m.label}}</span>
+          <span style="margin-left: auto; padding: 2px 10px; border: 1px solid {{m.color}}; color: {{m.color}}; font-size: 13px; font-weight: 600">{{m.badge}}</span>
+        </div>
+      </sc-for>
+      <div style="padding: 16px 20px 20px; border: 1px solid #ef4444; background: #0d0d0d; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap">
+          <span style="width: 10px; height: 10px; border-radius: 50%; background: #ef4444"></span>
+          <span style="font-weight: 600; font-size: 15px">2011</span>
+          <span style="color: #c7c7c7; font-size: 14px">GPU-MPCNN Ensemble</span>
+          <span style="margin-left: auto; padding: 2px 10px; border: 1px solid #ef4444; color: #ef4444; font-size: 13px; font-weight: 600">0.2%</span>
+        </div>
+        <div style="border-top: 1px solid #303030; padding-top: 12px; display: flex; flex-direction: column; gap: 10px">
+          <span style="font-size: 12px; font-weight: 600; color: #8f8f8f">Multi-Column GPU-MPCNN (Ciresan et al.)</span>
+          <p style="margin: 0; font-size: 13px; line-height: 1.65; color: #c7c7c7">First human-competitive performance (~0.2%) on MNIST. 'A dramatic improvement, since the record had hovered around 0.4% for almost a decade.' Same architecture achieved first superhuman result on traffic signs.</p>
+          <a href="https://arxiv.org/abs/1202.2745" style="align-self: flex-start; font-size: 12px; font-weight: 600; color: #ef4444; text-decoration: underline; text-underline-offset: 4px">Ciresan et al. 2012 — arXiv:1202.2745 →</a>
+        </div>
+      </div>
+    </section>
+
+    <aside style="padding: 20px 24px; background: #000000; border: 1px solid #38bdf8">
+      <p style="margin: 0; font-size: 13px; line-height: 1.7; color: #c7c7c7">Starting from an 0.80% SVM baseline in 1998, the MNIST error rate stagnated near 0.4% for almost a decade (2003–2010). The breakthrough to human-level performance came primarily from GPU acceleration enabling deeper networks and larger ensembles — not fundamentally new algorithms. Post-2011, advances in regularisation (DropConnect, 2013) and attention mechanisms (SE-Networks, 2020) pushed error well below human level. By 2020 an ensemble of just three CNNs reached 0.09%, limited mainly by the dataset’s own known mislabelled test images.</p>
+    </aside>
+
+    <p style="margin: 0; text-align: center; font-size: 11px; line-height: 2; color: #8f8f8f">Sources: <a class="src" href="https://arxiv.org/abs/1404.7828">Schmidhuber (2014) arXiv:1404.7828</a> · <a class="src" href="https://doi.org/10.1109/5.726791">LeCun et al. (1998) IEEE</a> · <a class="src" href="https://arxiv.org/abs/1202.2745">Ciresan et al. (2012) arXiv:1202.2745</a> · <a class="src" href="https://arxiv.org/abs/2008.10400">An et al. (2020) arXiv:2008.10400</a></p>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"bg":{"editor":"enum","options":["image","svg","none"],"default":"image"},"frame":{"editor":"boolean","default":true},"$preview":{"width":1280,"height":1900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const rows = [
+      { year: 1989, label: 'MNIST Created', color: '#38bdf8', badge: 'Origin' },
+      { year: 1994, label: 'MNIST Dataset Compiled', color: '#a78bfa', badge: 'Origin' },
+      { year: 1998, label: 'LeNet-5 & SVM Baseline', color: '#818cf8', badge: '0.8%' },
+      { year: 2003, label: 'CNN + Distortions', color: '#0ea5e9', badge: '0.4%' },
+      { year: 2006, label: 'Deep Belief Network', color: '#f59e0b', badge: '1.2%' },
+      { year: 2006, label: 'Improved CNN', color: '#0ea5e9', badge: '0.39%' },
+      { year: 2010, label: 'GPU + Plain BP', color: '#10b981', badge: '0.35%' },
+      { year: 2013, label: 'DropConnect', color: '#f97316', badge: '0.21%' },
+      { year: 2020, label: 'SE-Network Committee', color: '#ec4899', badge: '0.17%' },
+      { year: 2020, label: 'Near-Perfect Ensemble', color: '#06b6d4', badge: '0.09%' },
+    ];
+    return { bg: this.props.bg ?? 'image', frame: this.props.frame ?? true, rows };
+  }
+}
+</script>
+</body>
+</html>

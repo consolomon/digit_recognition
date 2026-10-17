@@ -1,0 +1,443 @@
+{
+  "source": {
+    "psd": "resources/design/Math_is_everywhere_artificial_neural_networks.psd",
+    "jpg": "resources/design/Math_is_everywhere_artificial_neural_networks.jpg",
+    "creator_tool": "Adobe Photoshop 21.0 (Windows)",
+    "created": "2024-05-22T14:36:13+02:00",
+    "modified": "2025-10-29T05:23:31+01:00",
+    "icc_profile": "Adobe RGB (1998)",
+    "color_mode": "RGB 8-bit",
+    "canvas_px": [
+      1920,
+      1080
+    ],
+    "resolution_dpi": 300,
+    "guides": [],
+    "extracted_by": "resources/code_sandbox/psd_extract.py (pure Python + Pillow, no psd-tools)",
+    "extracted_on": "2026-10-17"
+  },
+  "character": "Strictly achromatic (mean saturation 0.002): near-black field, white monospace type, grey particle-network photo in the lower half, two LaTeX formulas as dim grey 'annotations', thin white inset frame. Lecture poster 'Math is everywhere: artificial neural networks' (Sreda obitaniya x Tech.ProSvet).",
+  "palette": {
+    "field": "#0d0d0d",
+    "pure_black": "#000000",
+    "ink": "#ffffff",
+    "grey_steps_from_network": [
+      "#171717",
+      "#303030",
+      "#3c3c3c",
+      "#4c4c4c",
+      "#616161",
+      "#c7c7c7"
+    ],
+    "formula_ink": "#a4a4a4 (anti-aliased, peak) on #0d0d0d",
+    "coverage_jpg": {
+      "#0d0d0d": 57.9,
+      "#4c4c4c": 9.5,
+      "#616161": 7.8,
+      "#3c3c3c": 7.3,
+      "#303030": 7.3,
+      "#c7c7c7": 4.0,
+      "#171717": 3.9,
+      "#070707": 2.3
+    },
+    "luma_percentiles": {
+      "p50": 13,
+      "p75": 61,
+      "p90": 92,
+      "p95": 122,
+      "p99": 255
+    },
+    "accent": null
+  },
+  "typography": {
+    "family": "Cascadia Mono (Regular) — every text layer; MyriadPro/AdobeInvisFont are Photoshop defaults in the font set, not used",
+    "title": {
+      "size_pt": 41.67,
+      "measured_em_px": 50,
+      "leading_px": 75,
+      "weight": "Regular",
+      "case": "sentence",
+      "color": "#ffffff"
+    },
+    "body": {
+      "size_pt": 33.33,
+      "measured_em_px": 40,
+      "weight": "Regular",
+      "color": "#ffffff"
+    },
+    "scale_ratio": 1.25,
+    "tracking": 0,
+    "links_meta": "event meta block is underlined (link-like), right-aligned block, left-aligned lines",
+    "note": "px measured from monospace advance (0.6 em): title 811px / 27 chars, handle 434px / 18 chars"
+  },
+  "layout": {
+    "frame": {
+      "inset_px": {
+        "left": 26,
+        "top": 31,
+        "right": 27,
+        "bottom": 31
+      },
+      "stroke_px": 2,
+      "stroke_color": "#ffffff",
+      "alignment": "inside",
+      "fill": null
+    },
+    "margins_px": {
+      "content_left": 79,
+      "content_top": 71,
+      "content_right": 48
+    },
+    "zones": [
+      "top-left: title (2 lines)",
+      "top-right: event meta (3 underlined lines)",
+      "middle: two formulas floating over the field",
+      "lower 55%: particle network, brightest to the right",
+      "bottom: two logo+text lock-ups (144x144 logo, 2 text lines)"
+    ],
+    "lockup": {
+      "logo_px": 144,
+      "gap_logo_text_px": 28,
+      "text_lines": 2
+    }
+  },
+  "elements": {
+    "network": "photographic particle network (nodes + thin lines), grey on #0d0d0d; usable as a page background texture (exports: webp 80 KB, jpg 159 KB)",
+    "formulas": [
+      "a^(n) = 1 / (1 + e^-(W a^(n-1) + b))  — sigmoid activation",
+      "w^(n+1)_(ai,aj) = w^n_(ai,aj) + Δw^mean_(ai,aj)  — weight update"
+    ],
+    "frame": "2px white inset rectangle around the whole canvas",
+    "logos": "Tech.ProSvet (axes + rocket, white on black) and Sreda obitaniya (chameleon) — brand marks of the partner orgs"
+  },
+  "layers": [
+    {
+      "index": 0,
+      "id": "base_black",
+      "psd_name": "Слой 0",
+      "bbox_ltrb": [
+        0,
+        0,
+        1920,
+        1080
+      ],
+      "blend": "norm",
+      "opacity": 255,
+      "visible": true,
+      "png": "layers/00_base_black.png",
+      "dominant_colors": [
+        "#000000"
+      ]
+    },
+    {
+      "index": 1,
+      "id": "bottom_band_black",
+      "psd_name": "Слой 9",
+      "bbox_ltrb": [
+        0,
+        880,
+        1920,
+        1080
+      ],
+      "blend": "norm",
+      "opacity": 255,
+      "visible": true,
+      "png": "layers/01_bottom_band_black.png",
+      "dominant_colors": [
+        "#000000"
+      ]
+    },
+    {
+      "index": 2,
+      "id": "network_particles",
+      "psd_name": "Слой 10",
+      "bbox_ltrb": [
+        0,
+        0,
+        1920,
+        1080
+      ],
+      "blend": "norm",
+      "opacity": 255,
+      "visible": true,
+      "png": "layers/02_network_particles.png",
+      "dominant_colors": [
+        "#0d0d0d",
+        "#434343",
+        "#313131",
+        "#5c5c5c",
+        "#1b1b1b",
+        "#0b0b0b"
+      ]
+    },
+    {
+      "index": 3,
+      "id": "formula_weight_update",
+      "psd_name": "Слой 11",
+      "bbox_ltrb": [
+        839,
+        330,
+        1437,
+        430
+      ],
+      "blend": "norm",
+      "opacity": 255,
+      "visible": true,
+      "png": "layers/03_formula_weight_update.png",
+      "dominant_colors": [
+        "#0d0d0d",
+        "#0b0b0b",
+        "#232323",
+        "#5d5d5d",
+        "#060606",
+        "#a4a4a4"
+      ]
+    },
+    {
+      "index": 4,
+      "id": "formula_sigmoid",
+      "psd_name": "Слой 12",
+      "bbox_ltrb": [
+        195,
+        405,
+        703,
+        549
+      ],
+      "blend": "norm",
+      "opacity": 255,
+      "visible": true,
+      "png": "layers/04_formula_sigmoid.png",
+      "dominant_colors": [
+        "#0d0d0d",
+        "#0b0b0b",
+        "#464646",
+        "#070707",
+        "#212121",
+        "#7f7f7f"
+      ]
+    },
+    {
+      "index": 5,
+      "id": "frame_rect",
+      "psd_name": "Прямоугольник 1",
+      "bbox_ltrb": [
+        26,
+        31,
+        1893,
+        1049
+      ],
+      "blend": "norm",
+      "opacity": 255,
+      "visible": true,
+      "png": "layers/05_frame_rect.png"
+    },
+    {
+      "index": 6,
+      "id": "logo_tech_prosvet",
+      "psd_name": "Слой 4",
+      "bbox_ltrb": [
+        1118,
+        893,
+        1262,
+        1037
+      ],
+      "blend": "norm",
+      "opacity": 255,
+      "visible": true,
+      "png": "layers/06_logo_tech_prosvet.png",
+      "dominant_colors": [
+        "#000000",
+        "#fafafa",
+        "#232323",
+        "#010001",
+        "#bbbbbb",
+        "#000001"
+      ]
+    },
+    {
+      "index": 7,
+      "id": "logo_sreda_obitaniya",
+      "psd_name": "Слой 5",
+      "bbox_ltrb": [
+        170,
+        893,
+        314,
+        1036
+      ],
+      "blend": "norm",
+      "opacity": 255,
+      "visible": true,
+      "png": "layers/07_logo_sreda_obitaniya.png",
+      "dominant_colors": [
+        "#000000",
+        "#c0c0c0",
+        "#848484",
+        "#d9d9d9",
+        "#bfbfbf",
+        "#151515"
+      ]
+    },
+    {
+      "index": 8,
+      "id": "text_title",
+      "psd_name": "Лекция «Математика повсюду: Искусственные нейросети»",
+      "bbox_ltrb": [
+        79,
+        71,
+        890,
+        205
+      ],
+      "blend": "norm",
+      "opacity": 255,
+      "visible": true,
+      "png": "layers/08_text_title.png",
+      "dominant_colors": [
+        "#ffffff"
+      ],
+      "text": "Лекция «Математика повсюду:\nИскусственные нейросети»",
+      "font_postscript": "CascadiaMono-Regular",
+      "font_size_pt": 41.66667,
+      "leading_pt": 75.0,
+      "underline": false,
+      "origin_xy": [
+        78.0,
+        115.0
+      ]
+    },
+    {
+      "index": 9,
+      "id": "text_tech_prosvet",
+      "psd_name": "Tech.ProSvet",
+      "bbox_ltrb": [
+        1290,
+        917,
+        1580,
+        955
+      ],
+      "blend": "norm",
+      "opacity": 255,
+      "visible": true,
+      "png": "layers/09_text_tech_prosvet.png",
+      "dominant_colors": [
+        "#ffffff"
+      ],
+      "text": "Tech.ProSvet",
+      "font_postscript": "CascadiaMono-Roman",
+      "font_size_pt": 33.33333,
+      "leading_pt": 75.0,
+      "underline": false,
+      "origin_xy": [
+        1289.0,
+        954.0
+      ]
+    },
+    {
+      "index": 10,
+      "id": "text_sreda_obitaniya",
+      "psd_name": "Среда обитания",
+      "bbox_ltrb": [
+        342,
+        917,
+        679,
+        965
+      ],
+      "blend": "norm",
+      "opacity": 255,
+      "visible": true,
+      "png": "layers/10_text_sreda_obitaniya.png",
+      "dominant_colors": [
+        "#ffffff"
+      ],
+      "text": "Среда обитания",
+      "font_postscript": "CascadiaMono-Roman",
+      "font_size_pt": 33.33333,
+      "leading_pt": 75.0,
+      "underline": false,
+      "origin_xy": [
+        341.0,
+        953.0
+      ]
+    },
+    {
+      "index": 11,
+      "id": "text_obitaniya_handle",
+      "psd_name": "@obitaniya_sreda",
+      "bbox_ltrb": [
+        341,
+        971,
+        729,
+        1021
+      ],
+      "blend": "norm",
+      "opacity": 255,
+      "visible": true,
+      "png": "layers/11_text_obitaniya_handle.png",
+      "dominant_colors": [
+        "#ffffff"
+      ],
+      "text": "@obitaniya_sreda",
+      "font_postscript": "CascadiaMono-Roman",
+      "font_size_pt": 33.33333,
+      "leading_pt": 75.0,
+      "underline": false,
+      "origin_xy": [
+        339.0,
+        1009.0
+      ]
+    },
+    {
+      "index": 12,
+      "id": "text_tech_handle",
+      "psd_name": "@tech_illumination",
+      "bbox_ltrb": [
+        1291,
+        977,
+        1725,
+        1021
+      ],
+      "blend": "norm",
+      "opacity": 255,
+      "visible": true,
+      "png": "layers/12_text_tech_handle.png",
+      "dominant_colors": [
+        "#ffffff"
+      ],
+      "text": "@tech_illumination",
+      "font_postscript": "CascadiaMono-Roman",
+      "font_size_pt": 33.33333,
+      "leading_pt": 75.0,
+      "underline": false,
+      "origin_xy": [
+        1289.0,
+        1015.0
+      ]
+    },
+    {
+      "index": 13,
+      "id": "text_event_meta",
+      "psd_name": "2 ноября, 20:00 Šafarikova 6, Beograd Free donation",
+      "bbox_ltrb": [
+        1359,
+        69,
+        1872,
+        271
+      ],
+      "blend": "norm",
+      "opacity": 255,
+      "visible": true,
+      "png": "layers/13_text_event_meta.png",
+      "dominant_colors": [
+        "#ffffff"
+      ],
+      "text": "2 ноября, 20:00\nŠafarikova 6, Beograd\nFree donation",
+      "font_postscript": "CascadiaMono-Regular",
+      "font_size_pt": 33.33333,
+      "leading_pt": 75.0,
+      "underline": true,
+      "origin_xy": [
+        1359.0,
+        106.0
+      ]
+    }
+  ]
+}
