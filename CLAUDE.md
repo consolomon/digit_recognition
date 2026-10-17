@@ -117,8 +117,8 @@ Keep them current as work happens, not only at the end:
 Every test sequence before a push includes the **owner's manual test of the
 project built and running in the local Docker environment**
 (`scripts/dr_rebuild.sh`, or `docker compose up -d --build`; host port
-`WEB_HOST_PORT`, default 8001 — use e.g. `WEB_HOST_PORT=8002` while another
-project's container holds 8001). Run the automated suite first, bring the
+`WEB_HOST_PORT` from the committed `.env`, default 8008 — the container
+also listens on 8008). Run the automated suite first, bring the
 stack up, hand it over, and **wait for the owner's explicit approval**.
 Nothing is pushed to a shared branch, promoted or released before that
 approval. In the feature cycle below, the manual test sits between the unit

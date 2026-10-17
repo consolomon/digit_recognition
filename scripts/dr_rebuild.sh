@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Rebuild and recreate the local "web_server" service (docker-compose.yaml).
 #
-#   scripts/dr_rebuild.sh [--no-cache]          WEB_HOST_PORT=8002 if 8001 is taken
+#   scripts/dr_rebuild.sh [--no-cache]          WEB_HOST_PORT=<port> if 8008 is taken
 #
 #   1. build    the new image dr_web_server:latest (the old container keeps running)
 #   2. pre      in throw-away containers of the NEW image: import check, then
@@ -30,8 +30,8 @@ image_of() { compose config --format json | python3 -c "import json,sys; print(j
 
 wait_http() {   # poll / from inside the container (python is in the image)
   for _ in $(seq 1 60); do
-    if compose exec -T "$SVC" python -c "import urllib.request; urllib.request.urlopen('http://localhost:8001/', timeout=3)" >/dev/null 2>&1; then
-      echo "$SVC healthy (http://localhost:8001/ inside the container)"; return 0
+    if compose exec -T "$SVC" python -c "import urllib.request; urllib.request.urlopen('http://localhost:8008/', timeout=3)" >/dev/null 2>&1; then
+      echo "$SVC healthy (http://localhost:8008/ inside the container)"; return 0
     fi
     sleep 1
   done
@@ -62,7 +62,7 @@ step "$SVC: last 10 log lines"
 compose logs --no-log-prefix --tail 10 "$SVC" | sed "s/^/[$SVC] /"
 
 # gunicorn logs 0.0.0.0 (all interfaces) — not an address to open
-PORT=$(compose port "$SVC" 8001 | sed 's/.*://')
+PORT=$(compose port "$SVC" 8008 | sed 's/.*://')
 step "$SVC: open http://127.0.0.1:${PORT}/  (or http://localhost:${PORT}/)"
 
 NEW_IMAGE=$(docker image inspect -f '{{.Id}}' "$IMAGE")

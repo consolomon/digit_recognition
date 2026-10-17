@@ -31,12 +31,12 @@ then deleted.
 | `docker-compose.yaml` | ✓ (dev ver.) | ✓ (dev ver.) | ✓ (prod ver.) |
 | `nginx/templates/` (nginx config template) | ✓ | ✓ | ✓ |
 | `nginx/certbot/` (certificates, ACME webroot) | ✗ | ✗ | ✗ (created on the VPS, git-ignored everywhere) |
-| `.env.example`, `CLAUDE.md`, `VERSION` | ✓ | ✓ | ✓ |
+| `.env` (committed — no secrets, owner 2026-10-17), `CLAUDE.md`, `VERSION` | ✓ | ✓ | ✓ |
 | `tests/` | ✓ | ✓ | ✓ (harmless there — outside the `./app` build context) |
 | `scripts/` | ✓ | ✓ | ✗ |
 | `.claude/` (`commands/`) | ✓ | ✓ | ✗ |
 | `resources/` (incl. `documentation/`) | ✓ (full) | ✓ (full) | `DEPLOY_KEEP` paths only — see `GITFLOW.md` §DEPLOY_KEEP |
-| `.env`, `.idea`, `venv`, `.mcp.json`, `__pycache__` | ✗ | ✗ | ✗ |
+| `.idea`, `venv`, `.mcp.json`, `__pycache__` | ✗ | ✗ | ✗ |
 
 `nginx/` is tracked on `dev` although only the production stack uses it,
 so its edits go through the normal feature cycle instead of being made on
@@ -63,9 +63,6 @@ c1.0.0: Init commit`, older message format, not rewritten) with remote
 master/dev version:
 
 ```
-.env
-.env.*
-!.env.example
 .mcp.json
 .idea/
 venv/
@@ -77,10 +74,15 @@ nginx/certbot/
 ```
 
 `.claude/settings.local.json` is ignored by the owner's global git ignore
-(`~/.config/git/ignore`), so it never needs a line here.
+(`~/.config/git/ignore`), so it never needs a line here. `.env` is **not**
+ignored: it is committed on every branch (owner, 2026-10-17 — it replaced
+`.env.example`; no secrets in it, ever).
 
-The workflow upgrade is one commit on `master`, `1.0.1` — a P bump, since
-it's a direct commit on `master` (`VERSION` was seeded with `1.0.0`).
+The workflow upgrade landed before the first push as `1.0.1` (gitflow,
+versioning, docs, docker, tests — a P bump, direct commit on `master`;
+`VERSION` was seeded with `1.0.0`) and `1.0.2` (web server port
+8001 → 8008, `.env` tracked), folded into the bootstrap at the owner's
+request rather than run as a feature.
 
 ---
 
@@ -136,10 +138,10 @@ git add -f resources/documentation/GITFLOW.md \
 ### 3.5 Replace `docker-compose.yaml` with the production version
 
 The dev compose runs only `web_server` with a host port
-(`${WEB_HOST_PORT:-8001}`). The production version:
+(`${WEB_HOST_PORT:-8008}:8008`). The production version:
 
-- `web_server` — `build: ./app`, **no host port** (only nginx reaches it),
-  `restart: always`;
+- `web_server` — `build: ./app`, gunicorn on 8008, **no host port** (only
+  nginx reaches it, `proxy_pass http://web_server:8008`), `restart: always`;
 - `nginx` (`dr_nginx`) — 80/443, renders `nginx/templates/*.template` with
   `DOMAIN` from `.env`, mounts `nginx/certbot/{conf,www}` read-only;
 - `certbot` (`dr_certbot`) — webroot `certonly --keep-until-expiring` for
@@ -212,6 +214,8 @@ Owner answers that shaped this setup:
 | Development unit | plain features, tracked in `BACKLOG.md` (no ROADMAP / PHASEn) |
 | Plan-docs folder | `resources/documentation/` |
 | Starting version | `VERSION` = `1.0.0`; first commit `1.0.1` |
+| Port (2026-10-17, after review) | web server on **8008** inside the container and on the host (`${WEB_HOST_PORT:-8008}:8008`) — `1.0.2` |
+| `.env` (2026-10-17, after review) | committed on every branch, replaces `.env.example`; no secrets |
 | Dataset + weights | stay in git; kept out of the image by `app/.dockerignore`; `python:3.12-slim` base |
 | Tests | `tests/` smoke suite (unittest + Flask test client) |
 | Bugs found while reading | recorded in `BACKLOG.md` only |

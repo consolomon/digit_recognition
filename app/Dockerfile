@@ -10,6 +10,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Set opened port
-EXPOSE 8001
+EXPOSE 8008
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8001", "--workers", "2", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8008", "--workers", "2", "app:app"]

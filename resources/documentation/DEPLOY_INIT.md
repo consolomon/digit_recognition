@@ -35,12 +35,19 @@ cd digit_recognition
 
 ## Step 2 — `.env`
 
+Nothing to create: `.env` is **committed** on every branch (owner,
+2026-10-17) and arrives with the clone — `DOMAIN=sandbox.prosvet.io`,
+`CERTBOT_EMAIL=consolomon1998@gmail.com`. Check it:
+
 ```bash
-cp .env.example .env      # DOMAIN=sandbox.prosvet.io, CERTBOT_EMAIL=consolomon1998@gmail.com
+grep -E '^(DOMAIN|CERTBOT_EMAIL)=' .env
 ```
 
-`.env` is never committed (all branches ignore it). `WEB_HOST_PORT` is
-unused in production — the deploy compose publishes no web port.
+Don't edit it on the VPS (a dirty tracked file breaks `git pull` and
+drifts from `dev`) — change it on `dev` and release. It holds no secrets;
+a future secret goes into an untracked file on the VPS, never into `.env`.
+`WEB_HOST_PORT` is unused in production — the deploy compose publishes no
+web port (nginx reaches `web_server:8008` on the compose network).
 
 ## Step 3 — First certificate (bootstrap)
 

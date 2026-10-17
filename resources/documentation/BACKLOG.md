@@ -46,3 +46,4 @@ Found while reading the code for the workflow upgrade (2026-10-17).
 | Item | Version | Date |
 |---|---|---|
 | Workflow upgrade (gitflow, `G.F.P` versioning, plan docs, slim image, smoke tests) | 1.0.1 | 2026-10-17 |
+| Web server port 8001 → 8008; `.env` committed instead of `.env.example` (folded into the bootstrap) | 1.0.2 | 2026-10-17 |

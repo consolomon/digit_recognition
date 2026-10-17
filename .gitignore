@@ -1,6 +1,3 @@
-.env
-.env.*
-!.env.example
 .mcp.json
 .idea/
 venv/

@@ -31,7 +31,7 @@ Policy source: `CLAUDE.md` §"Development cycle". Every item from
 | 1 | Start the feature | `/new-feature <name>` — Claude **suggests** a name from the backlog item (e.g. `stage3-error-json`) and the owner submits it or types a custom one; the first commit moves the item to *In progress* in `BACKLOG.md` |
 | 2 | Build | commits on `feature/<name>`: first one `next_version.sh feature` (F+1, P=0), later ones `patch` |
 | 3 | Unit tests | `venv/bin/python -m unittest discover -s tests -t .` |
-| 4 | Owner's manual test | `scripts/dr_rebuild.sh` (`WEB_HOST_PORT=8002` if 8001 is taken — it is, by another project's container) → hand over → wait for approval |
+| 4 | Owner's manual test | `scripts/dr_rebuild.sh` (http://127.0.0.1:8008/) → hand over → wait for approval |
 | 5 | Finish the feature | `/finish-feature` — merge into `dev`, push `dev`, delete the branch locally and on the remote |
 | 6 | Full tests | on the merged `dev`: the unit suite in the venv **and** in the rebuilt image (`scripts/dr_rebuild.sh` runs it before swapping the container) — nothing skipped |
 | 7 | Promote to master | `/promote-master` |
@@ -45,11 +45,11 @@ on `dev` (after it) and re-run from that step's test gate.
 
 The local stack (`docker-compose.yaml` on master/dev) is one service,
 `web_server`, image and container `dr_web_server`, host port
-`${WEB_HOST_PORT:-8001}`.
+`${WEB_HOST_PORT:-8008}:8008` (`WEB_HOST_PORT` from the committed `.env`).
 
 ```bash
 scripts/dr_rebuild.sh                    # [--no-cache]
-WEB_HOST_PORT=8002 scripts/dr_rebuild.sh # while 8001 is taken
+WEB_HOST_PORT=8009 scripts/dr_rebuild.sh # only if 8008 is ever taken
 ```
 
 Steps: build the new image (the old container keeps running) → import
@@ -157,7 +157,7 @@ cycle the manual test is step 4, between the unit tests and
 
 ```bash
 venv/bin/python -m unittest discover -s tests -t .      # automated suite first
-WEB_HOST_PORT=8002 scripts/dr_rebuild.sh                # or: docker compose up -d --build
+scripts/dr_rebuild.sh                                   # or: docker compose up -d --build
 # -> hand over for the owner's manual test, wait for "approve"
 ```
 

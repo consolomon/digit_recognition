@@ -9,5 +9,5 @@ services:
     container_name: dr_web_server
     restart: unless-stopped
     ports:
-      # Host port 8001 is often taken locally — override with WEB_HOST_PORT.
-      - "${WEB_HOST_PORT:-8001}:8001"
+      # Host port from WEB_HOST_PORT (.env), default 8008 — same as the container's.
+      - "${WEB_HOST_PORT:-8008}:8008"
