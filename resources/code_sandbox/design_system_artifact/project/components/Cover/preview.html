@@ -1,0 +1,34 @@
+<!-- @dsCard height=288 -->
+<style>
+  .cover { position: relative; width: 960px; height: 288px; background: var(--bg); overflow: hidden; font-family: var(--font-mono); }
+  .ink { fill: var(--ink); }
+  .accent { fill: var(--accent); }
+  .field { fill: var(--field); }
+  .lineblk { fill: var(--line); }
+  .dot { fill: var(--line-strong); }
+  .frame { fill: none; stroke: var(--ink); stroke-width: 2; }
+  .name { position: absolute; left: 48px; bottom: 64px; width: 440px; margin: 0; font-size: 76px; line-height: 0.95; font-weight: 400; color: var(--ink); }
+  .tag { position: absolute; left: 48px; bottom: 32px; width: 440px; margin: 0; font-size: 13px; color: var(--muted); }
+</style>
+<div class="cover">
+  <svg width="960" height="288" viewBox="0 0 960 288" aria-hidden="true" style="position:absolute;inset:0">
+    <!-- blocks: ink 176×312 (s9+s8+s7… cut to 176 = 11×s4), accent 96×96 (s9), field 280×168, line 96×48 (s9×s7) -->
+    <!-- arrangement: one tall ink slab bleeding off top and bottom, satellites bleed off top/right: the poster's white frame read as a slab beside black -->
+    <!-- pattern: dot grid at s5 (24px) pitch in line-strong over the field block: "precise, technical, mono, a 4px grid" row; nodes of the network without its lines -->
+    <!-- steps s5 24 / s7 48 / s9 96; radius 0 everywhere (radius-btn is the only rounding and is not used on surfaces) -->
+    <rect class="ink" x="504" y="-12" width="176" height="312"></rect>
+    <rect class="accent" x="704" y="-1" width="96" height="96"></rect>
+    <rect class="lineblk" x="824" y="47" width="136" height="48"></rect>
+    <rect class="field" x="704" y="120" width="257" height="169"></rect>
+    <g>
+      <circle class="dot" cx="728" cy="144" r="2"></circle><circle class="dot" cx="752" cy="144" r="2"></circle><circle class="dot" cx="776" cy="144" r="2"></circle><circle class="dot" cx="800" cy="144" r="2"></circle><circle class="dot" cx="824" cy="144" r="2"></circle><circle class="dot" cx="848" cy="144" r="2"></circle><circle class="dot" cx="872" cy="144" r="2"></circle><circle class="dot" cx="896" cy="144" r="2"></circle><circle class="dot" cx="920" cy="144" r="2"></circle><circle class="dot" cx="944" cy="144" r="2"></circle>
+      <circle class="dot" cx="728" cy="168" r="2"></circle><circle class="dot" cx="752" cy="168" r="2"></circle><circle class="dot" cx="776" cy="168" r="2"></circle><circle class="dot" cx="800" cy="168" r="2"></circle><circle class="dot" cx="824" cy="168" r="2"></circle><circle class="dot" cx="848" cy="168" r="2"></circle><circle class="dot" cx="872" cy="168" r="2"></circle><circle class="dot" cx="896" cy="168" r="2"></circle><circle class="dot" cx="920" cy="168" r="2"></circle><circle class="dot" cx="944" cy="168" r="2"></circle>
+      <circle class="dot" cx="728" cy="192" r="2"></circle><circle class="dot" cx="752" cy="192" r="2"></circle><circle class="dot" cx="776" cy="192" r="2"></circle><circle class="dot" cx="800" cy="192" r="2"></circle><circle class="dot" cx="824" cy="192" r="2"></circle><circle class="dot" cx="848" cy="192" r="2"></circle><circle class="dot" cx="872" cy="192" r="2"></circle><circle class="dot" cx="896" cy="192" r="2"></circle><circle class="dot" cx="920" cy="192" r="2"></circle><circle class="dot" cx="944" cy="192" r="2"></circle>
+      <circle class="dot" cx="728" cy="216" r="2"></circle><circle class="dot" cx="752" cy="216" r="2"></circle><circle class="dot" cx="776" cy="216" r="2"></circle><circle class="dot" cx="800" cy="216" r="2"></circle><circle class="dot" cx="824" cy="216" r="2"></circle><circle class="dot" cx="848" cy="216" r="2"></circle><circle class="dot" cx="872" cy="216" r="2"></circle><circle class="dot" cx="896" cy="216" r="2"></circle><circle class="dot" cx="920" cy="216" r="2"></circle><circle class="dot" cx="944" cy="216" r="2"></circle>
+      <circle class="dot" cx="728" cy="240" r="2"></circle><circle class="dot" cx="752" cy="240" r="2"></circle><circle class="dot" cx="776" cy="240" r="2"></circle><circle class="dot" cx="800" cy="240" r="2"></circle><circle class="dot" cx="824" cy="240" r="2"></circle><circle class="dot" cx="848" cy="240" r="2"></circle><circle class="dot" cx="872" cy="240" r="2"></circle><circle class="dot" cx="896" cy="240" r="2"></circle><circle class="dot" cx="920" cy="240" r="2"></circle><circle class="dot" cx="944" cy="240" r="2"></circle>
+    </g>
+  </svg>
+  <h1 class="name">Signal on<br>Black</h1>
+  <p class="tag">One accent on a black field, monospace, the network underneath.</p>
+</div>
+<script></script>
