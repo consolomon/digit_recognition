@@ -34,12 +34,15 @@ Found while reading the code for the workflow upgrade (2026-10-17).
 | B-7 | `app/requirements.txt` unpinned | pin at least `numpy>=2` (pickle guardrail) |
 | B-8 | `/stage2/learn` overwrites the tracked `stage2/weights.data` inside the container; gunicorn's default 30 s worker timeout vs the page's 120 s | decide where trained weights live; `--timeout` |
 | B-9 | Empty `app/static/script.js`; `app/static/MNIST_Dashboard.jsx` is an unused JSX source copy of `history.js` | keep as source or delete |
+| B-10 | Page visual redesign | owner request 2026-10-17. Scope (owner, 2026-10-17):<br>1. a design reference dataset from the poster PSD/JPG;<br>2. new background and palette on all 5 pages, keeping the single accent;<br>3. a draft design system ready for new elements;<br>4. a Figma mirror and a Miro "Sandbox" export.<br>Functionality untouched. Result: `DESIGN_SYSTEM.md`, ARCH-4 |
+| B-11 | `history.html` loads React, ReactDOM, prop-types and Recharts from unpkg with floating versions (`react@18`, `recharts@2`) | pin exact versions (or vendor them into `static/`), so a CDN release can't break History |
+| B-12 | `app/static/MNIST_Dashboard.jsx` (B-9's unused copy) still carries the 1.0 navy colours and the pink milestone | resolve together with B-9: delete it, or regenerate it from `history.js` |
 
 ## In progress
 
 | Item | Branch | Started |
 |---|---|---|
-| — | | |
+| B-10 Page visual redesign | `feature/page-visual-redesign` | 2026-10-17 |
 
 ## Done
 

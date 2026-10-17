@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Digit Recognition — landing</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#000000}
+a{color:#ffffff}a:hover{color:#38bdf8}
+.bg-image{background:#000000 url(/_blob/92a06f857642bbb3e21e56cd64b73fb9) no-repeat center bottom/100% auto}
+.bg-svg{background:#000000 url(/_blob/dee011ae0935568c884175fee17252f0) no-repeat center bottom/100% auto}
+.bg-none{background:#000000}
+.tab{color:#c7c7c7;text-decoration:underline;text-decoration-color:#4c4c4c;text-decoration-thickness:1px;text-underline-offset:7px}
+.tab:hover{color:#ffffff;text-decoration-color:#ffffff}
+.tab-active{color:#38bdf8;text-decoration-color:#38bdf8;text-decoration-thickness:2px}
+.btn{font-family:inherit;font-size:14px;letter-spacing:.02em;padding:0 22px;height:44px;display:inline-flex;align-items:center;border-radius:2px;border:1px solid #4c4c4c;background:#000000;color:#ffffff;cursor:pointer;text-decoration:none}
+.btn:hover{border-color:#38bdf8;color:#38bdf8}
+.meta{color:#ffffff;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:9px}
+.meta:hover{color:#38bdf8;text-decoration-color:#38bdf8}
+</style>
+</helmet>
+<div class="bg-{{bg}}" style="position: relative; height: 100vh; min-height: 560px; overflow: hidden; color: #ffffff; font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace; -webkit-font-smoothing: antialiased">
+  <sc-if value="{{frame}}" hint-placeholder-val="{{ true }}"><div style="position: absolute; inset: 20px; border: 2px solid #ffffff; pointer-events: none; z-index: 20"></div></sc-if>
+  <div style="position: absolute; inset: {{scrollInset}}; overflow-y: auto; display: flex; flex-direction: column">
+
+  <nav style="position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; min-height: 64px; padding: 0 56px; box-sizing: border-box; background: #000000; border-bottom: 1px solid #303030">
+    <a href="#" style="font-size: 14px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: #ffffff; text-decoration: none; padding: 20px 0">Digit Recognition</a>
+    <div style="display: flex; flex-wrap: wrap; gap: 28px; font-size: 14px">
+      <a href="Stage1.dc.html" class="tab">Stage 1</a>
+      <a href="Stage2.dc.html" class="tab">Stage 2</a>
+      <a href="Stage3.dc.html" class="tab">Stage 3</a>
+      <a href="History.dc.html" class="tab">History</a>
+    </div>
+  </nav>
+
+  <section style="width: 100%; max-width: 1120px; margin: 0 auto; padding: 96px 56px 64px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 56px; justify-content: space-between; align-items: flex-start">
+    <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 32px">
+      <h1 style="margin: 0; font-size: 49px; line-height: 1.15; font-weight: 400; letter-spacing: -.01em">Neural Networks &amp;<br>Digit Recognition</h1>
+      <p style="margin: 0; max-width: 640px; font-size: 16px; line-height: 1.75; color: #ffffff">Neural networks are already part of our lives: they manage our calendars, write emails for us, control transportation, help invent medicines, and so on. Understanding how they work from the inside will protect you from misconceptions, improve your AI usage experience, and give you a solid advantage on your way to good work or study in the future.</p>
+      <p style="margin: 0; max-width: 640px; font-size: 16px; line-height: 1.75; color: #e0e0e0">This app guides you from simple binary classification to full digit recognition trained on the MNIST dataset.</p>
+    </div>
+  </section>
+
+  <section style="width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 56px 64px; box-sizing: border-box">
+    <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 32px">
+      <p style="margin: 0; font-size: 12px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: #38bdf8">Three Stages</p>
+      <div style="flex: 1; height: 1px; background: #303030"></div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px">
+      <div style="display: flex; flex-direction: column; gap: 14px; padding: 32px 28px; background: #000000; border: 1px solid #ffffff">
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: #38bdf8">Stage 01</span>
+        <h2 style="margin: 0; font-size: 20px; font-weight: 500">Binary Classification</h2>
+        <p style="margin: 0; flex: 1; font-size: 14px; line-height: 1.7; color: #8f8f8f">Classify a zero or one drawn on a <strong style="color: #ffffff; font-weight: 500">3×3 pixel grid</strong> — the simplest form of image recognition.</p>
+        <a href="Stage1.dc.html" class="btn" style="align-self: flex-start; margin-top: 8px">Try Stage 1</a>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px; padding: 32px 28px; background: #000000; border: 1px solid #ffffff">
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: #38bdf8">Stage 02</span>
+        <h2 style="margin: 0; font-size: 20px; font-weight: 500">Digit Recognition</h2>
+        <p style="margin: 0; flex: 1; font-size: 14px; line-height: 1.7; color: #8f8f8f">Recognize any digit from 0 to 9 drawn on a <strong style="color: #ffffff; font-weight: 500">5×3 pixel grid</strong> — a step up in complexity.</p>
+        <a href="Stage2.dc.html" class="btn" style="align-self: flex-start; margin-top: 8px">Try Stage 2</a>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px; padding: 32px 28px; background: #000000; border: 1px solid #ffffff">
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: #38bdf8">Stage 03</span>
+        <h2 style="margin: 0; font-size: 20px; font-weight: 500">MNIST Recognition</h2>
+        <p style="margin: 0; flex: 1; font-size: 14px; line-height: 1.7; color: #8f8f8f">Full digit recognition on a <strong style="color: #ffffff; font-weight: 500">28×28 pixel canvas</strong>, trained on the real MNIST dataset.</p>
+        <a href="Stage3.dc.html" class="btn" style="align-self: flex-start; margin-top: 8px">Try Stage 3</a>
+      </div>
+    </div>
+  </section>
+
+  <footer style="width: 100%; max-width: 1120px; margin: auto auto 0; flex-shrink: 0; padding: 0 56px 72px; box-sizing: border-box">
+    <div style="display: flex; flex-wrap: wrap; gap: 24px 32px; padding: 28px; background: #000000">
+      <div style="flex: 1 1 260px; display: flex; gap: 20px; align-items: center; justify-content: center">
+        <img src="/_blob/c0a1501716f131c78b44d11483c83e85" alt="Sreda obitaniya logo" style="width: 64px; height: 64px; display: block; flex-shrink: 0">
+        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 16px; min-width: 0"><span>Среда обитания</span><span class="meta" style="color: #c7c7c7; text-underline-offset: 6px">@obitaniya_sreda</span></div>
+      </div>
+      <div style="flex: 1 1 260px; display: flex; gap: 20px; align-items: center; justify-content: center">
+        <img src="/_blob/427f384a5ffa9f545d5e99a575ee069e" alt="Tech.ProSvet logo" style="width: 64px; height: 64px; display: block; flex-shrink: 0">
+        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 16px; min-width: 0"><span>Tech.ProSvet</span><span class="meta" style="color: #c7c7c7; text-underline-offset: 6px">@tech_illumination</span></div>
+      </div>
+    </div>
+  </footer>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"bg":{"editor":"enum","options":["image","svg","none"],"default":"image"},"frame":{"editor":"boolean","default":true},"$preview":{"width":1280,"height":1600}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const frame = this.props.frame ?? true;
+    return { bg: this.props.bg ?? 'image', frame, scrollInset: frame ? '22px' : '0' };
+  }
+}
+</script>
+</body>
+</html>

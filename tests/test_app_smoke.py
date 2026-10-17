@@ -51,6 +51,43 @@ class PagesTest(SmokeTestCase):
                 self.assertEqual(response.status_code, 200)
                 response.close()
 
+    def test_page_shell(self):
+        # Design-system shell from base.html: frame, scroll window, navbar, partners footer
+        for url, active in (("/", None), ("/stage1/", "/stage1/"), ("/stage2/", "/stage2/"),
+                            ("/stage3/", "/stage3/"), ("/history/", "/history/")):
+            with self.subTest(url=url):
+                html = self.client.get(url).get_data(as_text=True)
+                for marker in ('class="frame"', 'class="viewport" tabindex="-1" autofocus', 'class="navbar"',
+                               'class="partners container"', "@tech_illumination"):
+                    self.assertIn(marker, html)
+                if active:
+                    self.assertIn(f'href="{active}" class="nav-tab active" aria-current="page"', html)
+                self.assertEqual(html.count("nav-tab active"), 1 if active else 0)
+
+    def test_page_script_hooks(self):
+        # Every id the stage scripts look up must survive a redesign
+        hooks = {
+            "/stage1/": ("grid", "recognizeBtn", "refreshBtn", "result", "stage1.js"),
+            "/stage2/": ("grid", "learnBtn", "recognizeBtn", "refreshBtn", "result", "stage2.js"),
+            "/stage3/": ("drawCanvas", "clearBtn", "uploadBtn", "fileInput", "recognizeBtn",
+                         "result", "stage3.js"),
+            "/history/": ("dashboard-root", "history.js"),
+        }
+        for url, ids in hooks.items():
+            with self.subTest(url=url):
+                html = self.client.get(url).get_data(as_text=True)
+                for hook in ids:
+                    needle = hook if hook.endswith(".js") else f'id="{hook}"'
+                    self.assertIn(needle, html)
+
+    def test_design_assets(self):
+        for path in ("img/network_bg.webp", "img/partners/sreda_obitaniya.png",
+                     "img/partners/tech_prosvet.png"):
+            with self.subTest(path=path):
+                response = self.client.get(f"/static/{path}")
+                self.assertEqual(response.status_code, 200)
+                response.close()
+
 
 class Stage1Test(SmokeTestCase):
     def test_recognize_returns_two_probabilities(self):
