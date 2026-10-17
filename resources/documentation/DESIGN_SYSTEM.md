@@ -211,9 +211,22 @@ Extending means adding a component or pattern in the next task. Steps:
 5. **Mirror** it in Figma and Miro when they're in use (§"Mirrors"). Note the version in the change log below.
 
 ## Mirrors
-- **Draft canvas (approved 2026-10-17):** https://claude.ai/artifact/GY9774sSb7xLYRKXCWbFNN (private). Sources: `resources/code_sandbox/design_canvas/`.
-- **Figma:** see the B-10 report (step 7).
-- **Miro "Sandbox" board:** see the B-10 report (step 8).
+All mirrors are copies. When they disagree, `style.css` and this file win.
+Re-sync the mirrors after a change.
+
+- **Draft canvas** (approved 2026-10-17): https://claude.ai/artifact/GY9774sSb7xLYRKXCWbFNN (private).
+  Sources: `resources/code_sandbox/design_canvas/`.
+- **claude.ai Design System "Signal on Black":** https://claude.ai/artifact/EHD45xHkB1LCXPGWc3Pa9D (private).
+  - Contents: tokens, a README, 7 components with static previews, the partner and background assets, and a cover.
+  - Future Design canvases install it from there.
+  - Sources: `resources/code_sandbox/design_system_artifact/`.
+- **Figma:** https://www.figma.com/design/LgSD9laDEX1zwWGnhwmIUd ("Digit Recognition — Signal on Black", Starter team).
+  - **Components page:** the variables (Color: 12, Spacing: 9, Layout: 7, with `var(--…)` code syntax), 6 text styles (`SoB/…`), and the component sets Button, NavTab, Tile and OutputPanel, plus StageCard and PartnersFooter.
+  - **Templates page:** pixel-perfect captures of the 5 pages.
+  - **Limits:** the captures lack the body's network background, since Figma's capture can't grab CSS body backgrounds. JetBrains Mono has no SemiBold in Figma, so the primary button label is Bold.
+  - **Read quota:** the account has a View seat (20 rate-limited MCP reads a month), so batch `use_figma` work.
+- **Miro "Sandbox" board:** https://miro.com/app/board/uXjVMmieAJ4=/. Four frames at x 0…7360, y 7000…8400, below all earlier content: "Signal on Black: overview", "Tokens", "Components", "Shell and how to extend".
+- **Adobe Express sheet:** `resources/code_sandbox/adobe_express_sheet.html`. It was not exported: Express import and Adobe Fonts are blocked for the account's region.
 
 ## Change log
 
