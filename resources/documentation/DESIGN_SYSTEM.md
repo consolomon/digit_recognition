@@ -231,10 +231,19 @@ Re-sync the mirrors after a change.
   - **Limits:** the captures lack the body's network background, since Figma's capture can't grab CSS body backgrounds. JetBrains Mono has no SemiBold in Figma, so the primary button label is Bold.
   - **Read quota:** the account has a View seat (20 rate-limited MCP reads a month), so batch `use_figma` work.
 - **Miro "Sandbox" board:** https://miro.com/app/board/uXjVMmieAJ4=/. Four frames at x 0…7360, y 7000…8400, below all earlier content: "Signal on Black: overview", "Tokens", "Components", "Shell and how to extend".
+- **Claude Design (standalone)** project "Signal on Black — Digit Recognition" (id `5c656a4e-c822-4851-bf37-569df64bc807`):
+  - Contents: `README.md`, the full `WEB_DESIGN.md` (every component, pattern and page in the `/design-system document` format), `tokens.json`, `styles/signal-on-black.css`, and 7 self-contained preview cards.
+  - Bundle sources: `resources/code_sandbox/claude_design_project/`.
+  - Access: through `/design-login`. Standalone Claude Design closes by 2026-12-14.
+  - A local copy of `WEB_DESIGN.md` is in `~/Documents/Code_sandbox/Digit_recognition/`.
 - **Adobe Express sheet:** `resources/code_sandbox/adobe_express_sheet.html`. It was not exported: Express import and Adobe Fonts are blocked for the account's region.
 
 ## Change log
 
 | Version | Change |
 |---|---|
+| 1.1.15 | Full documentation published to the claude.ai Design System (version 4): 11 component READMEs in the Document format (4 new: Label, DrawCanvas, ControlsPanel, HistoryChart), plus Patterns, Pages and Accessibility sections. |
+| 1.1.14 | Full web-design documentation (`WEB_DESIGN.md`): foundations, patterns, 11 components, 5 pages. Published as a new Claude Design project; the claude.ai Design System was not republished (owner's choice). |
+| 1.1.13 | Mirrors re-synced to 1.1.12: the shell's hidden scrollbar and the shipped status. Updated in the claude.ai Design System (README, PageShell, `tokens.json` ref `master@54d715a`), on the Figma library header and Templates note, and on the Miro Sandbox (PageShell, shell diagram, Status, overview card). Standalone Claude Design (`DesignSync`) not checked: it needs `/design-login` first. |
+| 1.1.11 | Scroll window scrollbar hidden permanently; `tabindex="-1" autofocus` for keyboard scrolling (owner, after the manual test). |
 | 1.1.x (B-10) | Draft 0.1: tokens, shell (frame + scroll window + network A), navbar tabs, buttons (3 variants), stage card, tile grid, draw canvas, controls panel, output panel, partners footer, History chrome. The owner's 6 correction rounds on the draft canvas are folded in. |
