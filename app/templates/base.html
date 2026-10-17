@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Digit Recognition{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    {# Signal on Black page shell: fixed white frame, content scrolls inside it.
+       Spec: resources/documentation/DESIGN_SYSTEM.md #}
+    <div class="frame" aria-hidden="true"></div>
+
+    <div class="viewport">
+        {% set active_page = active_page | default('') %}
+        <nav class="navbar">
+            <a href="/" class="nav-brand">Digit Recognition</a>
+            <div class="nav-tabs">
+                {% for href, key, label in [('/stage1/', 'stage1', 'Stage 1'), ('/stage2/', 'stage2', 'Stage 2'),
+                                            ('/stage3/', 'stage3', 'Stage 3'), ('/history/', 'history', 'History')] %}
+                <a href="{{ href }}" class="nav-tab{% if active_page == key %} active{% endif %}"{% if active_page == key %} aria-current="page"{% endif %}>{{ label }}</a>
+                {% endfor %}
+            </div>
+        </nav>
+
+        {% block content %}{% endblock %}
+
+        {% include 'partials/_partners.html' %}
+    </div>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

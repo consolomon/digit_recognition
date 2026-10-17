@@ -102,7 +102,7 @@
     }
   },
   "elements": {
-    "network": "photographic particle network (nodes + thin lines), grey on #0d0d0d; usable as a page background texture (exports: webp 80 KB, jpg 159 KB)",
+    "network": "photographic particle network (nodes + thin lines), grey on #0d0d0d. Web export network_bg.webp: levels #0d0d0d->#000, crop y 380-1080, 1920x700, WebP 86 KB = background A (shipped in app/static/img/). network.svg = generated stylised alternative B (resources/code_sandbox/gen_network.py, seed 28)",
     "formulas": [
       "a^(n) = 1 / (1 + e^-(W a^(n-1) + b))  — sigmoid activation",
       "w^(n+1)_(ai,aj) = w^n_(ai,aj) + Δw^mean_(ai,aj)  — weight update"
