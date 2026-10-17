@@ -42,7 +42,7 @@ Found while reading the code for the workflow upgrade (2026-10-17).
 
 | Item | Branch | Started |
 |---|---|---|
-| B-10 Page visual redesign | `feature/page-visual-redesign` | 2026-10-17 |
+| — | | |
 
 ## Done
 
@@ -52,3 +52,4 @@ Found while reading the code for the workflow upgrade (2026-10-17).
 | Web server port 8001 → 8008; `.env` committed instead of `.env.example` (folded into the bootstrap) | 1.0.2 | 2026-10-17 |
 | Production = dedicated VPS; `/sync-deploy-vps` adopted from Sreda-obitaniya; `.claude/` + `scripts/` on deploy; `DEPLOY_KEEP` 3-way merge; nginx variable upstream (folded into the bootstrap) | 1.0.3 | 2026-10-17 |
 | Tracked `.claude/settings.json` (attribution off); DNS recorded; first push of `master`/`dev`/`deploy` | 1.0.4 | 2026-10-17 |
+| B-10 Page visual redesign — "Signal on Black" design system (`DESIGN_SYSTEM.md`, ARCH-4): poster reference dataset, black field + network background, single `#38bdf8` accent, `base.html` shell with fixed frame and hidden-scrollbar scroll window, partners footer; mirrors on claude.ai, Figma, Miro | 1.1.11 | 2026-10-17 |
