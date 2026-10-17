@@ -3,3 +3,4 @@ numpy
 beartype
 pillow
 gunicorn
+matplotlib

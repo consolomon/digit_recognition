@@ -1,16 +1,13 @@
-FROM python:3.12
+FROM python:3.12-slim
 
-# Add enviroment arguments
 WORKDIR /app
 
-# Update container components
-RUN apt-get update -y
+# Setup require packages first, so code changes reuse the cached layer
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all files into container
+# Copy the app (.dockerignore keeps the training dataset and caches out)
 COPY . .
-
-# Setup require packages
-RUN pip install -r requirements.txt
 
 # Set opened port
 EXPOSE 8001

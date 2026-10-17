@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.pyo
+.dockerignore
+Dockerfile
+# Training-only data: no web route trains stage 3, recognition needs only
+# stage3/weights.data
+stage3/emnist-*-ubyte

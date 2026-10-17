@@ -1,1 +1,11 @@
 .env
+.env.*
+!.env.example
+.mcp.json
+.idea/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+nginx/certbot/
