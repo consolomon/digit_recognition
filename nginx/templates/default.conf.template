@@ -1,7 +1,8 @@
 # Rendered by the nginx image at container start: every *.template in
 # /etc/nginx/templates/ goes through envsubst into /etc/nginx/conf.d/.
 # Only variables defined in the container environment are substituted
-# (DOMAIN, from .env), so nginx's own $host / $request_uri stay intact.
+# (DOMAIN, from .env), so nginx's own $host / $request_uri /
+# $web_server_host stay intact.
 
 server {
     listen 80;
@@ -24,11 +25,19 @@ server {
     ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
 
+    # Resolve the upstream per request through Docker's embedded DNS. A literal
+    # `proxy_pass http://web_server:8008` is resolved once at nginx start and
+    # cached forever; every dr_web_server recreate (each release) may change its
+    # IP -> 502s (Sreda-obitaniya, 2026-09-09, ~22 h down). Never collapse it
+    # back to the literal form.
+    resolver 127.0.0.11 valid=10s ipv6=off;
+
     location ~ / {
+        set $web_server_host web_server;
         # note: do not add a path (even a single /) after the port in `proxy_pass`,
         # otherwise nginx will canonicalise the URI and cause signature verification
         # errors.
-        proxy_pass http://web_server:8008;
+        proxy_pass http://$web_server_host:8008;
         client_max_body_size 5M;
 
         proxy_http_version 1.1;

@@ -35,7 +35,7 @@ Policy source: `CLAUDE.md` §"Development cycle". Every item from
 | 5 | Finish the feature | `/finish-feature` — merge into `dev`, push `dev`, delete the branch locally and on the remote |
 | 6 | Full tests | on the merged `dev`: the unit suite in the venv **and** in the rebuilt image (`scripts/dr_rebuild.sh` runs it before swapping the container) — nothing skipped |
 | 7 | Promote to master | `/promote-master` |
-| 8 | Promote to deploy | `/promote-deploy` — merges and pushes `deploy`. **Not a production deploy**: the VPS pulls by hand (`DEPLOY_INIT.md` §"Release"), an explicit owner action outside the cycle |
+| 8 | Promote to deploy | `/promote-deploy` — merges and pushes `deploy`. **Not a production deploy**: the release on the VPS is an explicit owner action outside the cycle (`DEPLOY_INIT.md` §"Release") |
 | 9 | Close | move the item to *Done* in `BACKLOG.md` with the shipped version; ready for the next item at step 1 |
 
 A failed step stops the cycle: fix on the feature branch (before step 5) or
@@ -59,8 +59,9 @@ check + the smoke tests in throw-away containers of the new image
 replaced image. A failing step stops the script before the running
 container is touched.
 
-Production is not affected: the `deploy` branch keeps its own compose, and
-`scripts/` never reaches it.
+Production is not affected: the `deploy` branch keeps its own compose
+(`DEPLOY_OWNED`). `scripts/` does reach `deploy` (since 2026-10-17), but
+`dr_rebuild.sh` drives the dev compose and is not used on the VPS.
 
 **Keep the feature branch checked out from step 1 to step 5** (`CLAUDE.md`
 §"Development cycle"): the owner reviews the changes in the IDE as they
@@ -199,7 +200,8 @@ Same carry-forward rule — `cat VERSION` must run *after* `dev` is merged in.
 ### Promote dev → deploy (when ready to release a new version)
 
 Run a **copy** of the script (see "Inherited hazards" — the checkout of
-`deploy` removes `scripts/` from disk mid-run):
+`deploy` swaps `scripts/merge_to_deploy.sh` for deploy's older copy
+mid-run):
 
 ```bash
 cp scripts/merge_to_deploy.sh /tmp/merge_to_deploy.sh   # Claude: "$CLAUDE_JOB_DIR/tmp/"
@@ -213,9 +215,51 @@ nothing extra to do here.
 ### Release on the VPS
 
 Pushing `deploy` builds nothing by itself. Releasing is a manual owner step
-on the VPS: `git pull origin deploy && docker compose up -d --build`
-(`DEPLOY_INIT.md` §"Release"). Until `DEPLOY_INIT.md` is done (blocked on
-the VPS host, `BACKLOG.md` OD-3), there is no production at all.
+on the dedicated VPS: `git pull --ff-only origin deploy && docker compose up
+-d --build`, then the end-to-end check through nginx (`DEPLOY_INIT.md`
+§"Release"). Until `DEPLOY_INIT.md` is done (the VPS isn't provisioned yet,
+`BACKLOG.md` OD-3/OD-4), there is no production at all.
+
+### VPS hotfixes — `/sync-deploy-vps`
+
+Branch management happens on the dev PC, with **one sanctioned exception**:
+`/sync-deploy-vps` (`.claude/commands/sync-deploy-vps.md`, adopted from
+Sreda-obitaniya on 2026-10-17), run in a Claude Code session **on the VPS**
+(`DEPLOY_INIT.md` §"Claude Code on the VPS"). A fix made on the VPS is
+otherwise at risk from the next `git pull`, or drifts from `dev` until
+someone back-ports it by hand. The command:
+
+1. **Part A** — commits local VPS changes as a hotfix (version = highest
+   `VERSION` on either branch + P) and pushes `deploy`; a clean tree just
+   fast-forwards onto `origin/deploy`. Never merges, rebases or force-pushes.
+2. **Part B** — back-ports `deploy` into `dev` in a temporary worktree:
+   dev keeps its own `DEPLOY_OWNED` and `DEV_ONLY` paths and `.gitignore`,
+   everything else (app code, `DEPLOY_KEEP` docs, `.env`, `VERSION` = the
+   higher value) takes the 3-way merge; every collision is a dialog.
+3. **Part C** — promotes the back-port (or `origin/dev`) into `deploy` in a
+   second worktree, restores deploy's owned paths **unconditionally**, and
+   after one approval pushes `dev` and `deploy` in a single
+   `git push --atomic`, then fast-forwards the production checkout.
+4. **Part D** — offers only the restarts that apply (`web_server` rebuild,
+   nginx recreate, compose up), waits for approval, and ends with the
+   end-to-end request through nginx.
+
+Why the promote after a back-port is mandatory and atomic: the back-port
+makes deploy an ancestor of `dev` with dev's side restored on the owned
+paths; without the matching promote, the next dev-PC promotion would see
+*dev* changing `docker-compose.yaml` relative to the new merge base (the
+"ancestry flip"). Both merges commit with the version carried forward.
+
+**After a sync moved `dev`, `git pull` it on the dev PC** (and tell open
+feature sessions) before new work. `master` is never touched by the
+command — promote it from the dev PC as usual.
+
+Verified offline on 2026-10-17 with the command's own blocks against
+throwaway repos — 38 checks, all passing: dev-PC promotion keeping both
+sides' `DEPLOY_KEEP` edits and the prod compose; a VPS hotfix back-ported
+and promoted atomically (dev keeps its compose, `resources/` and
+`.gitignore`; `VERSION` equal on both); the next dev-PC promotion after it;
+a re-run converging to nothing.
 
 ---
 
@@ -231,7 +275,8 @@ the VPS host, `BACKLOG.md` OD-3), there is no production at all.
 | Finish feature | `git checkout dev && git merge --no-ff --no-commit feature/name && git commit -m "$(cat VERSION) merge: finish feature/name" && git branch -d feature/name` |
 | Promote to master | `git checkout master && git merge --no-ff --no-commit dev && git commit -m "$(cat VERSION) merge: sync dev → master" && git push origin master` |
 | Promote to deploy | `cp scripts/merge_to_deploy.sh /tmp/ && bash /tmp/merge_to_deploy.sh` |
-| Release | on the VPS: `git pull origin deploy && docker compose up -d --build` |
+| Release | on the VPS: `git pull --ff-only origin deploy && docker compose up -d --build` + end-to-end check |
+| VPS hotfix / sync | on the VPS, in Claude Code: `/sync-deploy-vps [subject]`; then `git pull` dev on the dev PC |
 
 ---
 
@@ -245,12 +290,13 @@ Custom slash commands in `.claude/commands` wrap the workflow above:
 | `/finish-feature` | `.claude/commands/finish-feature.md` | Merges the current feature branch into `dev`, deletes it |
 | `/promote-master` | `.claude/commands/promote-master.md` | Merges `dev` into `master` and pushes |
 | `/promote-deploy` | `.claude/commands/promote-deploy.md` | Runs a copy of `scripts/merge_to_deploy.sh` |
+| `/sync-deploy-vps` | `.claude/commands/sync-deploy-vps.md` | **VPS only:** hotfix capture, back-port into `dev`, promote into `deploy`, atomic push (§"VPS hotfixes") |
 
-`.claude` is committed to `dev` and `master` only (see the branch inventory
-in `GITFLOW_INIT.md`) — it is not present on `deploy`, so these commands are
-only usable from a `dev`/`master`/feature checkout, which is also the only
-place they'd make sense to run. They are project-scoped — they only appear
-when Claude Code is opened in this project's directory.
+`.claude` is committed to all three branches (on `deploy` since 2026-10-17,
+so the VPS has `/sync-deploy-vps`). The first four commands belong to the
+dev PC; `/sync-deploy-vps` refuses to run anywhere but a `deploy` checkout.
+They are project-scoped — they only appear when Claude Code is opened in
+this project's directory.
 
 ---
 
@@ -335,8 +381,9 @@ Run (a copy of) scripts/merge_to_deploy.sh to merge dev into deploy.
 
 ## `resources/` on deploy — the `DEPLOY_KEEP` exception
 
-`scripts/merge_to_deploy.sh` strips the whole `resources/` tree, then
-restores only the paths listed in its `DEPLOY_KEEP` array. Currently:
+`scripts/merge_to_deploy.sh` strips its `DEV_ONLY` paths (the whole
+`resources/` tree), then restores only the paths listed in its
+`DEPLOY_KEEP` array. Currently:
 
 ```
 resources/documentation/GITFLOW.md
@@ -350,15 +397,16 @@ dev-side. A `DEPLOY_KEEP` path that doesn't exist on `dev` yet is skipped,
 not an error; a directory entry is guarded against conflicts on any file
 under it.
 
-**The overwrite hazard to design around:** treat every `DEPLOY_KEEP` path as
-**written on dev, only read on deploy**. The script restores them from
-`MERGE_HEAD` (dev's version) every promotion, so anything written to them
-directly on `deploy` is lost at the next promotion — if the VPS needs to
-record something (an incident, a manual step), put it in a file that is
-*not* in `DEPLOY_KEEP`, or land it on `dev` too. A genuine per-line conflict
-on a `DEPLOY_KEEP` path aborts the promotion instead of silently picking a
-side; the script captures the conflict set *before* touching the index,
-because a `git rm`/`git add` would clear the unmerged flag first.
+**Both sides may write them** (since 2026-10-17). The script re-stages
+git's **3-way merge result** for every `DEPLOY_KEEP` path, so an edit made on
+`dev` and one made on `deploy` (e.g. a VPS record via `/sync-deploy-vps`)
+both survive a promotion. The two earlier rules each lost data: "always
+deploy's copy" reverted every dev-side doc update (TechProSvet,
+2026-09-14), "always dev's copy" silently discarded VPS-side records
+(Sreda-obitaniya). A genuine per-line conflict on a `DEPLOY_KEEP` path
+aborts the promotion instead of silently picking a side; the script
+captures the conflict set *before* touching the index, because a
+`git rm`/`git add` would clear the unmerged flag first.
 
 **Also note:** these paths live under `resources/`, which is `.gitignore`d
 on `deploy` — the restore loop uses `git add -f`.
@@ -373,9 +421,11 @@ listed so nobody "simplifies" the fix away:
 
 | Hazard | Handling |
 |---|---|
-| `set -e` aborts on the *expected* modify/delete conflict (`deploy` deleted `.claude/`/`scripts/`, `dev` modified them) before the script's own resolution runs | `git merge … \|\| true`, then a fresh `--diff-filter=U` check at the end |
-| New dev-only files merge in conflict-free and would leak to `deploy` | `git rm --cached -rf .claude scripts resources` runs on whatever is staged, conflicted or not |
-| Restoring `DEPLOY_KEEP` from `HEAD` silently reverts those docs to the previous promotion's copy | restore from `MERGE_HEAD` (dev's version) |
+| `set -e` aborts on an *expected* conflict (dev edited the deploy-owned compose; a dev-only path modified/deleted) before the script's own resolution runs | `git merge … \|\| true`, then a fresh `--diff-filter=U` check at the end |
+| New dev-only files merge in conflict-free and would leak to `deploy` | `git rm --cached -rf` of every `DEV_ONLY` path runs on whatever is staged, conflicted or not |
+| Restoring `DEPLOY_KEEP` from one side loses the other side's edits | re-stage git's 3-way merge result |
+| Ancestry flip after a VPS back-port: dev's side of deploy-owned paths looks like dev's change | `DEPLOY_OWNED` restored to deploy's version unconditionally (script and `/sync-deploy-vps`), back-port + promote pushed atomically |
+| nginx resolves a literal `proxy_pass` host once and keeps the stale IP after a `web_server` recreate → 502s (Sreda-obitaniya, 2026-09-09, ~22 h) | variable upstream + `resolver 127.0.0.11` in the nginx template |
 | `VERSION` conflicts when `deploy` got its own commits | dev's value wins (carry-forward) |
 | `.gitignore` conflicts (both branches own it) | union of lines + WARNING to review |
 | Nothing to merge → no `MERGE_HEAD` → strip steps would delete every `DEPLOY_KEEP` path | early exit "nothing to promote" |
@@ -390,15 +440,16 @@ A merge only carries files that changed on the *source* side. When `deploy`
 alone edits a file (a hotfix applied directly on the VPS, say), git keeps
 deploy's version at every future promotion and never reports a conflict — the
 drift is silent and permanent until someone back-ports it deliberately.
-**Avoid editing on `deploy` directly** for exactly this reason; if a VPS
-hotfix is unavoidable, back-port it to `dev` in the same sitting.
+**Never leave a VPS edit on `deploy` alone**: run `/sync-deploy-vps` on the
+VPS in the same sitting, which back-ports it to `dev` and promotes it back
+atomically.
 
 **Detecting it.** After any promotion, diff the branches excluding the
 intentional, by-design differences:
 
 ```bash
 git diff --name-only deploy dev \
-  | grep -v -E "^(resources/|\.claude|scripts/|docker-compose\.yaml|\.gitignore)"
+  | grep -v -E "^(resources/|docker-compose\.yaml|\.gitignore)"
 ```
 
 Anything listed (besides `VERSION` right after a deploy-only commit) is
@@ -414,9 +465,9 @@ than the diff sign alone:
 git ls-tree -r --name-only <branch> -- <path>
 ```
 
-**If a `deploy`→`dev` back-port is ever done as a real merge** (merging
-`deploy`'s independent commits back into `dev`, e.g. after a VPS hotfix),
-that changes the merge-base relationship: paths `deploy` owns by design
+**A `deploy`→`dev` back-port by hand is a trap — use `/sync-deploy-vps`.**
+Merging `deploy`'s independent commits back into `dev` changes the
+merge-base relationship: paths `deploy` owns by design
 (`docker-compose.yaml`'s prod version, the `.gitignore` deploy-only lines)
 can flip to look like *dev's* changes relative to the new base. The next
 `merge_to_deploy.sh` run would then have no conflict to report and would
@@ -427,8 +478,9 @@ committing any such back-port, verify:
 git diff --cached --name-status origin/deploy -- docker-compose.yaml
 ```
 
-prints nothing unexpected. Prefer copying the specific hotfixed files into
-`dev` as a plain commit over a real cross-branch merge.
+prints nothing unexpected. `/sync-deploy-vps` does all of this for you —
+the mandatory promote restores deploy's side and both refs move in one
+atomic push; never push a hand-made back-port on its own.
 
 ---
 
@@ -465,7 +517,9 @@ as a separate follow-up task, whenever any of the following happens:
 - a `CLAUDE.md` rule that affects git operations changes (versioning
   semantics, authorship policy, permission scoping) — reflect it in the
   relevant command examples here;
-- `scripts/merge_to_deploy.sh`, `scripts/next_version.sh`,
+- `scripts/merge_to_deploy.sh` (its `DEPLOY_OWNED` / `DEV_ONLY` /
+  `DEPLOY_KEEP` arrays are also read by `/sync-deploy-vps`),
+  `.claude/commands/sync-deploy-vps.md`, `scripts/next_version.sh`,
   `scripts/dr_rebuild.sh`, or any `.claude/commands/*.md` gitflow script
   changes — this file's command examples must match what they actually do;
 - the repo layout changes (a new top-level directory, a new dev-only tool,

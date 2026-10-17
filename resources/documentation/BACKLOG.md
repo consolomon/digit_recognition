@@ -16,8 +16,8 @@ Blockers to raise with the owner, never to resolve unilaterally
 |---|---|---|
 | OD-1 | Production domain | **decided 2026-10-17: `sandbox.prosvet.io`** |
 | OD-2 | Certbot registration email | **decided 2026-10-17: `consolomon1998@gmail.com`** |
-| OD-3 | VPS host for the nginx + certbot stack | **open.** If it is the Hostinger VPS that runs Coolify (TechProSvet), Coolify's proxy already holds ports 80/443 there — the standalone `dr_nginx` would collide. Options then: another VPS, or route `sandbox.prosvet.io` through Coolify's proxy instead (changes `DEPLOY_INIT.md` and the deploy compose). |
-| OD-4 | DNS for `sandbox.prosvet.io` | **open.** A record → the OD-3 VPS. If Cloudflare proxies it (orange cloud), HTTP-01 still works on port 80, but SSL mode must be *Full (strict)* and no Cloudflare rule may force HTTPS on `/.well-known/acme-challenge/`. |
+| OD-3 | VPS host for the nginx + certbot stack | **decided 2026-10-17: a dedicated VPS without Coolify** (not Sreda-obitaniya's or TechProSvet's host — both already hold 80/443), Claude Code installed there for `/sync-deploy-vps`. **Still open: provisioning the machine** (provider, IP). |
+| OD-4 | DNS for `sandbox.prosvet.io` | **open** — waits for the OD-3 machine's IP. A record → that IP. If Cloudflare proxies it (orange cloud), HTTP-01 still works on port 80, but SSL mode must be *Full (strict)* and no Cloudflare rule may force HTTPS on `/.well-known/acme-challenge/`. |
 
 ## Backlog
 
@@ -47,3 +47,4 @@ Found while reading the code for the workflow upgrade (2026-10-17).
 |---|---|---|
 | Workflow upgrade (gitflow, `G.F.P` versioning, plan docs, slim image, smoke tests) | 1.0.1 | 2026-10-17 |
 | Web server port 8001 → 8008; `.env` committed instead of `.env.example` (folded into the bootstrap) | 1.0.2 | 2026-10-17 |
+| Production = dedicated VPS; `/sync-deploy-vps` adopted from Sreda-obitaniya; `.claude/` + `scripts/` on deploy; `DEPLOY_KEEP` 3-way merge; nginx variable upstream (folded into the bootstrap) | 1.0.3 | 2026-10-17 |

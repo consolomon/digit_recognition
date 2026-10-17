@@ -8,9 +8,9 @@ dev-only tooling and applies the `DEPLOY_KEEP` allowlist for `resources/`
 `deploy` already contains `dev`, it stops with "nothing to promote".
 
 Run a copy, not the file in place: the script's own `git checkout deploy`
-replaces `scripts/merge_to_deploy.sh` on disk mid-execution (deploy has no
-`scripts/`), and bash reads scripts incrementally — so the in-place file can
-vanish or change under the running shell:
+replaces `scripts/merge_to_deploy.sh` on disk mid-execution with deploy's
+(possibly older) copy, and bash reads scripts incrementally — so the
+in-place file can change under the running shell:
 
 ```bash
 cp scripts/merge_to_deploy.sh "$CLAUDE_JOB_DIR/tmp/merge_to_deploy.sh"
@@ -22,7 +22,8 @@ git checkout dev
 branch on GitHub; the VPS pulls and rebuilds it by hand
 (`resources/documentation/DEPLOY_INIT.md` §"Release"), and that step is an
 explicit owner action outside the cycle. Do not run anything on the VPS as
-part of this command.
+part of this command. Hotfixes made on the VPS come back through
+`/sync-deploy-vps` (run there), not through this command.
 
 This pushes to a shared branch (Scope C) — confirm with the owner before
 running unless autonomous mode was granted for Scope C in the current

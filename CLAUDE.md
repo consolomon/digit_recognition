@@ -99,7 +99,7 @@ things live:
 | `BACKLOG.md` | Open decisions (OD-n), backlog items (B-n), what's in progress on which feature branch, what shipped in which version |
 | `GITFLOW.md` | Day-to-day branch workflow, feature cycle, `DEPLOY_KEEP`, inherited hazards |
 | `GITFLOW_INIT.md` | Repo bootstrap, branch file inventory, adaptation record |
-| `DEPLOY_INIT.md` | VPS setup (nginx + certbot), certificate bootstrap/renewal, release procedure |
+| `DEPLOY_INIT.md` | Dedicated-VPS setup (nginx + certbot, Claude Code), certificate bootstrap/renewal, release procedure, VPS hotfixes via `/sync-deploy-vps` |
 
 Keep them current as work happens, not only at the end:
 
@@ -173,6 +173,15 @@ and review every change as it lands. During that time:
 
 The tree moves to `dev` only through `/finish-feature`; the promotions
 (steps 7–8) check out other branches and come back to `dev` when done.
+
+**VPS hotfixes — the one exception to "branches are managed on the dev
+PC"** (adopted from Sreda-obitaniya, 2026-10-17). A fix made directly on the
+production VPS is never left uncommitted or on `deploy` alone: it is
+captured with `/sync-deploy-vps` in a Claude Code session on the VPS, which
+back-ports it into `dev`, promotes it back into `deploy` and pushes both
+atomically after an approval dialog (`GITFLOW.md` §"VPS hotfixes"). It never
+touches `master` or `feature/*`. When it moved `dev`, the dev PC pulls `dev`
+before new work, and open feature sessions are told so they can merge it.
 
 **Two or more feature branches at once — one Claude Code session per
 feature branch**:
@@ -285,7 +294,7 @@ Strict and project-wide:
 | A stage's model code **and its data** (weights, datasets) | `app/stageN/` |
 | Python modules shared by several stages | `app/lib/` (create it when first needed) |
 | Production reverse-proxy config | `nginx/` (`templates/*.template`, rendered by the nginx image) |
-| Dev-only tooling | `scripts/` (shell), `.claude/commands/` (slash commands) — never on `deploy` |
+| Tooling | `scripts/` (shell), `.claude/commands/` (slash commands) — tracked on all branches, `deploy` included (the VPS runs `/sync-deploy-vps`) |
 | Plan docs | `resources/documentation/` |
 | Temporary / mock project files (drafts, mock data, experiments, training runs' scratch output) | `resources/code_sandbox/` |
 | Continuous, systematic test files | `tests/` |

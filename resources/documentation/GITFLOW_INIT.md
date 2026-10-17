@@ -12,10 +12,12 @@ For ongoing day-to-day workflow once this is done, see `GITFLOW.md`.
 ## Three permanent branches
 
 - **master** — superset of all files. Used locally on the dev machine.
-- **dev** — project source + local dev tools (`.claude` commands,
-  `scripts/`). Day-to-day development branch.
-- **deploy** — project source only (no dev tools) + the production
-  `docker-compose.yaml` (web server + nginx + certbot). Pulled by the VPS
+- **dev** — project source + dev tools (`.claude` commands, `scripts/`) +
+  the full `resources/` design record. Day-to-day development branch.
+- **deploy** — project source + `.claude/` + `scripts/` (the VPS runs
+  Claude Code and `/sync-deploy-vps`, owner 2026-10-17) + the production
+  `docker-compose.yaml` (web server + nginx + certbot); `resources/` only as
+  the `DEPLOY_KEEP` docs. Checked out on the dedicated VPS
   (`DEPLOY_INIT.md`).
 
 Temporary feature branches are created from `dev`, merged back into `dev`,
@@ -33,8 +35,8 @@ then deleted.
 | `nginx/certbot/` (certificates, ACME webroot) | ✗ | ✗ | ✗ (created on the VPS, git-ignored everywhere) |
 | `.env` (committed — no secrets, owner 2026-10-17), `CLAUDE.md`, `VERSION` | ✓ | ✓ | ✓ |
 | `tests/` | ✓ | ✓ | ✓ (harmless there — outside the `./app` build context) |
-| `scripts/` | ✓ | ✓ | ✗ |
-| `.claude/` (`commands/`) | ✓ | ✓ | ✗ |
+| `scripts/` | ✓ | ✓ | ✓ (since 2026-10-17 — `/sync-deploy-vps` reads `merge_to_deploy.sh`) |
+| `.claude/` (`commands/`) | ✓ | ✓ | ✓ (since 2026-10-17 — the VPS runs `/sync-deploy-vps`) |
 | `resources/` (incl. `documentation/`) | ✓ (full) | ✓ (full) | `DEPLOY_KEEP` paths only — see `GITFLOW.md` §DEPLOY_KEEP |
 | `.idea`, `venv`, `.mcp.json`, `__pycache__` | ✗ | ✗ | ✗ |
 
@@ -106,22 +108,18 @@ git checkout -b deploy
 
 ### 3.2 Update `.gitignore` for deploy
 
-Append the deploy-only exclusions to the file already on `dev`:
+Append the deploy-only exclusion to the file already on `dev`:
 
 ```
-.claude/
-scripts/
 resources/
 ```
 
-### 3.3 Remove dev-only files from git tracking on deploy
+### 3.3 (removed 2026-10-17)
 
-```bash
-git rm --cached -r .claude scripts
-```
-
-These stay on disk locally while `deploy` is checked out (still usable) but
-are not part of the `deploy` branch's history going forward.
+`.claude/` and `scripts/` used to be untracked on deploy here. They now stay
+— the VPS runs Claude Code and `/sync-deploy-vps`, which reads its path
+lists from `scripts/merge_to_deploy.sh`. The only dev-only path is
+`resources/` (the `DEV_ONLY` array in that script).
 
 ### 3.4 Strip `resources/` to the `DEPLOY_KEEP` allowlist
 
@@ -133,7 +131,9 @@ git add -f resources/documentation/GITFLOW.md \
 ```
 
 — exactly the `DEPLOY_KEEP` array in `scripts/merge_to_deploy.sh`
-(`git add -f`: `resources/` is ignored on deploy).
+(`git add -f`: `resources/` is ignored on deploy). The files stay on disk
+(ignored) while `deploy` is checked out on the dev PC; `git checkout dev`
+puts them back under tracking.
 
 ### 3.5 Replace `docker-compose.yaml` with the production version
 
@@ -147,18 +147,19 @@ The dev compose runs only `web_server` with a host port
 - `certbot` (`dr_certbot`) — webroot `certonly --keep-until-expiring` for
   `${DOMAIN}` / `${CERTBOT_EMAIL}`, runs once per `up` and exits.
 
-The file lives only on `deploy`; change it there by a plain commit (P
-bump), never by merging it back to `dev`.
+The file lives only on `deploy` — it is the `DEPLOY_OWNED` array in
+`scripts/merge_to_deploy.sh`, so promotions always keep deploy's version.
+Change it on the VPS and capture it with `/sync-deploy-vps` (which keeps
+dev's own compose on dev), or by a plain commit on `deploy`.
 
 ### 3.6 Commit deploy branch setup
 
 ```bash
 NEW=$(scripts/next_version.sh patch); echo "$NEW" > VERSION
 git add -A
-git commit -m "$NEW init deploy branch: strip dev tools, DEPLOY_KEEP resources/, prod compose"
+git commit -m "$NEW init deploy branch: DEPLOY_KEEP resources/, prod compose"
 ```
 
-(`scripts/` is still on disk at this point — it was only untracked in 3.3.)
 
 ---
 
@@ -187,7 +188,7 @@ git branch -a
 
 ## Step 5 — `scripts/merge_to_deploy.sh`
 
-Already part of the `1.0.1` commit on `master` (and so on `dev`); see
+Part of the bootstrap commits on `master`/`dev` and, since 2026-10-17, tracked on `deploy` too; see
 `GITFLOW.md` for the script and the rules around it.
 
 ---
@@ -221,6 +222,9 @@ Owner answers that shaped this setup:
 | Bugs found while reading | recorded in `BACKLOG.md` only |
 | Domain / email | `sandbox.prosvet.io` / `consolomon1998@gmail.com` |
 | Names | service `web_server`; containers/images `dr_web_server`, `dr_nginx`, `dr_certbot` |
+| Production host (2026-10-17) | **dedicated VPS, no Coolify** — own nginx + certbot, Claude Code installed there |
+| VPS sync (2026-10-17) | `/sync-deploy-vps` adopted from Sreda-obitaniya; `.claude/` + `scripts/` ship to deploy; `merge_to_deploy.sh` gets `DEPLOY_OWNED` / `DEV_ONLY` arrays and keeps git's 3-way merge result for `DEPLOY_KEEP` |
+| nginx upstream (2026-10-17) | variable `proxy_pass` + `resolver 127.0.0.11` (Sreda gotcha 2) |
 
 Refactorings applied: R-1 plan-docs set, R-2 `CLAUDE.md`, R-3 these two
 gitflow docs, R-4 versioning + `.gitignore`, R-5 `merge_to_deploy.sh` +
