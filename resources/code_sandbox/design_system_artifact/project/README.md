@@ -90,6 +90,16 @@ These are CSS components (class names from the app); there is no JS bundle.
 | OutputPanel | `.output` `.label` `.result-box` |
 | PartnersFooter | `.partners` `.partners-list` `.partner` |
 | PageShell | `.frame` `.viewport` `.container` |
+| Label | `.label` `.label-accent` |
+| DrawCanvas | `.draw-canvas` `.canvas-note` |
+| ControlsPanel | `.panel.controls` `.button-row` |
+| HistoryChart | `#dashboard-root` (React + Recharts, inline styles in `history.js`) |
+
+Each component's README follows the `/design-system document` format:
+description, variants, properties, states, accessibility, do's and don'ts,
+and a code example. The **Patterns**, **Pages** and **Accessibility**
+sections cover the page shell, every page's layout and request/response
+contract, and the accessibility baseline with its known gaps.
 
 ### Adding a component
 1. Extend an existing one with a modifier class before inventing a new one.

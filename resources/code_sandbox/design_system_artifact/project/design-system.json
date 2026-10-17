@@ -29,5 +29,5 @@
   },
   "blobs": {},
   "docs": {"readme": "project/README.md", "sections": []},
-  "lastChange": {"by": "consolomon", "at": "2026-10-17T17:30:00Z", "via": "GitHub · consolomon/digit_recognition@54d715a", "note": "Re-sync to 1.1.12: shell scrollbar hidden (1.1.11), status shipped"}
+  "lastChange": {"by": "consolomon", "at": "2026-10-17T21:40:00Z", "via": "GitHub · consolomon/digit_recognition@632c82b", "note": "Full web-design documentation: 11 component READMEs, Patterns, Pages, Accessibility"}
 }

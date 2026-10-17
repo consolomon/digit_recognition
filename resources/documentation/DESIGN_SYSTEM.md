@@ -242,6 +242,7 @@ Re-sync the mirrors after a change.
 
 | Version | Change |
 |---|---|
+| 1.1.15 | Full documentation published to the claude.ai Design System (version 4): 11 component READMEs in the Document format (4 new: Label, DrawCanvas, ControlsPanel, HistoryChart), plus Patterns, Pages and Accessibility sections. |
 | 1.1.14 | Full web-design documentation (`WEB_DESIGN.md`): foundations, patterns, 11 components, 5 pages. Published as a new Claude Design project; the claude.ai Design System was not republished (owner's choice). |
 | 1.1.13 | Mirrors re-synced to 1.1.12: the shell's hidden scrollbar and the shipped status. Updated in the claude.ai Design System (README, PageShell, `tokens.json` ref `master@54d715a`), on the Figma library header and Templates note, and on the Miro Sandbox (PageShell, shell diagram, Status, overview card). Standalone Claude Design (`DesignSync`) not checked: it needs `/design-login` first. |
 | 1.1.11 | Scroll window scrollbar hidden permanently; `tabindex="-1" autofocus` for keyboard scrolling (owner, after the manual test). |
