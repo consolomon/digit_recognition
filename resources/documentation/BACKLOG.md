@@ -34,12 +34,13 @@ Found while reading the code for the workflow upgrade (2026-10-17).
 | B-7 | `app/requirements.txt` unpinned | pin at least `numpy>=2` (pickle guardrail) |
 | B-8 | `/stage2/learn` overwrites the tracked `stage2/weights.data` inside the container; gunicorn's default 30 s worker timeout vs the page's 120 s | decide where trained weights live; `--timeout` |
 | B-9 | Empty `app/static/script.js`; `app/static/MNIST_Dashboard.jsx` is an unused JSX source copy of `history.js` | keep as source or delete |
+| B-10 | Page visual redesign | owner request 2026-10-17; scope to be defined on the branch. Keep the JetBrains Mono + shared `style.css` guardrails (`ARCHITECTURE.md` §UI) unless the owner decides otherwise |
 
 ## In progress
 
 | Item | Branch | Started |
 |---|---|---|
-| — | | |
+| B-10 Page visual redesign | `feature/page-visual-redesign` | 2026-10-17 |
 
 ## Done
 
