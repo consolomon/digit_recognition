@@ -13,8 +13,8 @@
 <style>
 body{margin:0;background:#000000}
 a{color:#ffffff}a:hover{color:#38bdf8}
-.bg-image{background:#000000 url(/_blob/92a06f857642bbb3e21e56cd64b73fb9) no-repeat center bottom/100% auto fixed}
-.bg-svg{background:#000000 url(/_blob/dee011ae0935568c884175fee17252f0) no-repeat center bottom/100% auto fixed}
+.bg-image{background:#000000 url(/_blob/92a06f857642bbb3e21e56cd64b73fb9) no-repeat center bottom/100% auto}
+.bg-svg{background:#000000 url(/_blob/dee011ae0935568c884175fee17252f0) no-repeat center bottom/100% auto}
 .bg-none{background:#000000}
 .tab{color:#c7c7c7;text-decoration:underline;text-decoration-color:#4c4c4c;text-decoration-thickness:1px;text-underline-offset:7px}
 .tab:hover{color:#ffffff;text-decoration-color:#ffffff}
@@ -25,10 +25,11 @@ a{color:#ffffff}a:hover{color:#38bdf8}
 .meta:hover{color:#38bdf8;text-decoration-color:#38bdf8}
 </style>
 </helmet>
-<div class="bg-{{bg}}" style="min-height: 1600px; color: #ffffff; font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace; -webkit-font-smoothing: antialiased">
-  <sc-if value="{{frame}}" hint-placeholder-val="{{ true }}"><div style="position: fixed; inset: 20px; border: 2px solid #ffffff; pointer-events: none; z-index: 20"></div></sc-if>
+<div class="bg-{{bg}}" style="position: relative; height: 100vh; min-height: 560px; overflow: hidden; color: #ffffff; font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace; -webkit-font-smoothing: antialiased">
+  <sc-if value="{{frame}}" hint-placeholder-val="{{ true }}"><div style="position: absolute; inset: 20px; border: 2px solid #ffffff; pointer-events: none; z-index: 20"></div></sc-if>
+  <div style="position: absolute; inset: {{scrollInset}}; overflow-y: auto; display: flex; flex-direction: column">
 
-  <nav style="position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; min-height: 64px; padding: 20px 56px 0; box-sizing: border-box; background: #000000; border-bottom: 1px solid #303030">
+  <nav style="position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; min-height: 64px; padding: 0 56px; box-sizing: border-box; background: #000000; border-bottom: 1px solid #303030">
     <a href="#" style="font-size: 14px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: #ffffff; text-decoration: none; padding: 20px 0">Digit Recognition</a>
     <div style="display: flex; flex-wrap: wrap; gap: 28px; font-size: 14px">
       <a href="Stage1.dc.html" class="tab">Stage 1</a>
@@ -43,12 +44,6 @@ a{color:#ffffff}a:hover{color:#38bdf8}
       <h1 style="margin: 0; font-size: 49px; line-height: 1.15; font-weight: 400; letter-spacing: -.01em">Neural Networks &amp;<br>Digit Recognition</h1>
       <p style="margin: 0; max-width: 600px; font-size: 16px; line-height: 1.75; color: #c7c7c7">Neural networks are already part of our lives: they manage our calendars, write emails for us, control transportation, help invent medicines, and so on. Understanding how they work from the inside will protect you from misconceptions, improve your AI usage experience, and give you a solid advantage on your way to good work or study in the future.</p>
       <p style="margin: 0; max-width: 600px; font-size: 16px; line-height: 1.75; color: #8f8f8f">This app guides you from simple binary classification to full digit recognition trained on the MNIST dataset.</p>
-    </div>
-    <div style="flex: 1 1 280px; display: flex; flex-direction: column; gap: 20px; font-size: 16px; padding-top: 10px">
-      <a href="Stage1.dc.html" class="meta">01 · 3×3 grid</a>
-      <a href="Stage2.dc.html" class="meta">02 · 5×3 grid</a>
-      <a href="Stage3.dc.html" class="meta">03 · 28×28 canvas</a>
-      <a href="History.dc.html" class="meta">MNIST milestones</a>
     </div>
   </section>
 
@@ -89,12 +84,14 @@ a{color:#ffffff}a:hover{color:#38bdf8}
       <div style="display: flex; flex-direction: column; gap: 6px; font-size: 16px"><span>Tech.ProSvet</span><span class="meta" style="color: #c7c7c7; text-underline-offset: 6px">@tech_illumination</span></div>
     </div>
   </footer>
+  </div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"bg":{"editor":"enum","options":["image","svg","none"],"default":"image"},"frame":{"editor":"boolean","default":true},"$preview":{"width":1280,"height":1600}}'>
 class Component extends DCLogic {
   renderVals() {
-    return { bg: this.props.bg ?? 'image', frame: this.props.frame ?? true };
+    const frame = this.props.frame ?? true;
+    return { bg: this.props.bg ?? 'image', frame, scrollInset: frame ? '22px' : '0' };
   }
 }
 </script>
