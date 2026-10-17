@@ -36,7 +36,7 @@ then deleted.
 | `.env` (committed — no secrets, owner 2026-10-17), `CLAUDE.md`, `VERSION` | ✓ | ✓ | ✓ |
 | `tests/` | ✓ | ✓ | ✓ (harmless there — outside the `./app` build context) |
 | `scripts/` | ✓ | ✓ | ✓ (since 2026-10-17 — `/sync-deploy-vps` reads `merge_to_deploy.sh`) |
-| `.claude/` (`commands/`) | ✓ | ✓ | ✓ (since 2026-10-17 — the VPS runs `/sync-deploy-vps`) |
+| `.claude/` (`commands/`, `settings.json`) | ✓ | ✓ | ✓ (since 2026-10-17 — the VPS runs `/sync-deploy-vps`; `settings.json` keeps attribution off there too) |
 | `resources/` (incl. `documentation/`) | ✓ (full) | ✓ (full) | `DEPLOY_KEEP` paths only — see `GITFLOW.md` §DEPLOY_KEEP |
 | `.idea`, `venv`, `.mcp.json`, `__pycache__` | ✗ | ✗ | ✗ |
 
@@ -167,6 +167,10 @@ git commit -m "$NEW init deploy branch: DEPLOY_KEEP resources/, prod compose"
 
 **Touches the network and shared remote branches — confirm before running
 (Scope C).** The remote already exists, so no `gh repo create`.
+
+Status: **done** (2026-10-17, after the owner's manual test of the 8008
+stack and explicit approval) — `master` fast-forwarded from `eaa0903`,
+`dev` and `deploy` created on `origin`.
 
 ```bash
 git push -u origin master dev deploy

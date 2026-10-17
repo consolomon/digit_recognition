@@ -272,7 +272,10 @@ repo-committed content may contain Claude/Anthropic authorship or session
 references** — no `Co-Authored-By: Claude ...` trailer, no `Claude-Session:`
 line, no "Generated with Claude Code" footer, nothing that attributes
 authorship to an AI agent or links back to a session. Applies to every
-branch, every commit, every PR, past and future.
+branch, every commit, every PR, past and future. Enforced for every Claude
+Code session in this checkout — dev PC and VPS — by the tracked
+`.claude/settings.json` (`attribution.commit` / `pr` empty,
+`sessionUrl: false`, `includeCoAuthoredBy: false`); never weaken it.
 
 Unlike the versioning rule above, **this one is retroactive**: any
 `Co-Authored-By`/`Claude-Session` reference in this repo's history (local

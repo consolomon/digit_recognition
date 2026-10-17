@@ -497,6 +497,12 @@ git config --global merge.ff false
 
 ## Record: Claude-authorship history check (2026-10-17)
 
+Enforcement: the tracked `.claude/settings.json` (all branches, so the VPS
+too) turns attribution off — `"attribution": {"commit": "", "pr": "",
+"sessionUrl": false}` plus `"includeCoAuthoredBy": false` for older Claude
+Code versions; same config as Sreda-obitaniya. Added in `1.0.4`.
+
+
 Per `CLAUDE.md` §"No Claude authorship in repo operations" (retroactive).
 History at adoption: one commit, `eaa0903 v1.0.0 c1.0.0: Init commit`,
 author `consolomon`, no `Co-Authored-By` / `Claude-Session` trailer; no

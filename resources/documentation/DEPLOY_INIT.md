@@ -14,7 +14,7 @@ behind `dr_nginx` (80/443, TLS), certificates from Let's Encrypt via
 | Domain | `sandbox.prosvet.io` | `BACKLOG.md` OD-1 |
 | Certbot email | `consolomon1998@gmail.com` | OD-2 |
 | VPS | dedicated, no Coolify — **machine not provisioned yet** | OD-3 |
-| DNS | **open** — A record → the VPS's IP, Cloudflare notes in OD-4 | OD-4 |
+| DNS | set — Cloudflare-**proxied** A/AAAA (edge IPs, origin hidden); see Step 3 | OD-4 |
 
 Nothing below has been run yet. **Every step touches a remote host or the
 network — confirm before running** (Scope C).
@@ -32,7 +32,9 @@ network — confirm before running** (Scope C).
 
 - Ports 80 and 443 free (`ss -ltnp | grep -E ':(80|443)\b'`) — nothing else
   may run a web server on this machine.
-- `sandbox.prosvet.io` resolves to the VPS (`dig +short sandbox.prosvet.io`).
+- `sandbox.prosvet.io` is set in Cloudflare and **proxied**: `dig +short` shows
+  Cloudflare edge IPs, not the VPS — check the origin IP in the Cloudflare
+  dashboard instead.
 - **Push** access to `github.com/consolomon/digit_recognition` over SSH —
   `/sync-deploy-vps` pushes `deploy` and `dev`, so a read-only deploy key is
   not enough. Generate a key on the VPS (`ssh-keygen -t ed25519`), add the
@@ -66,6 +68,16 @@ VPS edit uncommitted (it breaks the next `git pull`) or on `deploy` alone.
 web port (nginx reaches `web_server:8008` on the compose network).
 
 ## Step 3 — First certificate (bootstrap)
+
+**Cloudflare first** (the record is proxied, so Let's Encrypt reaches the
+VPS through Cloudflare's edge on port 80):
+- *SSL/TLS → Edge Certificates → Always Use HTTPS* **off** (or a rule
+  exempting `/.well-known/acme-challenge/*`) while the certificate is
+  issued — otherwise Cloudflare redirects the HTTP-01 challenge to HTTPS
+  and issuance fails;
+- *SSL/TLS mode* **Full (strict)** — but only once the origin certificate
+  exists (Step 4); *Flexible* would loop with nginx's own HTTP→HTTPS
+  redirect.
 
 nginx can't start with the 443 `server` block until the certificate files
 exist, so the very first certificate is issued with certbot's **standalone**
