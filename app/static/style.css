@@ -90,6 +90,16 @@ body {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    scrollbar-width: none;      /* scrollbar hidden permanently (owner, 2026-10-17); */
+    -ms-overflow-style: none;   /* wheel, touch and keyboard still scroll */
+}
+
+.viewport::-webkit-scrollbar {
+    display: none;
+}
+
+.viewport:focus {
+    outline: none;              /* tabindex="-1" only routes keyboard scrolling here */
 }
 
 .container {

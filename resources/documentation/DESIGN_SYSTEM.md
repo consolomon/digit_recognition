@@ -103,7 +103,8 @@ stacks `.panel`s full width.
 ```
 body (black + network_bg.webp at the bottom, overflow hidden)
 ├── .frame       fixed, inset --frame-inset, 2px --ink, aria-hidden
-└── .viewport    fixed inside the frame, overflow-y auto, flex column
+└── .viewport    fixed inside the frame, overflow-y auto, flex column,
+                 scrollbar hidden, tabindex="-1" + autofocus (keyboard scrolling)
     ├── .navbar  sticky top, brand + 4 tabs
     ├── {% block content %}          (.container sections / main)
     └── .partners                    (margin-top: auto → standard bottom footer)
@@ -112,6 +113,10 @@ body (black + network_bg.webp at the bottom, overflow hidden)
 - Pages `{% extends 'base.html' %}`, set `{% set active_page = 'stage1' %}` (`stage2`, `stage3`, `history`, or none on the landing page), and fill `title` / `content` / `scripts`.
 - The navbar marks the active tab with `.active` plus `aria-current="page"`.
 - The tests in `tests/test_app_smoke.py::PagesTest` guard the shell and every element id the scripts use.
+- **The scroll window's scrollbar is hidden permanently** (owner, 2026-10-17, after the manual test).
+  - It's hidden in every engine: `scrollbar-width: none`, `-ms-overflow-style`, and `::-webkit-scrollbar`.
+  - Wheel, touch and keyboard scrolling still work. `tabindex="-1" autofocus` routes Page Down, Space and the arrow keys to the window from the start, without a first click.
+  - Don't add a visible scrollbar back to the shell.
 
 ### Background
 - **A, the poster network image** (owner's choice, 2026-10-17): the PSD layer "Слой 10", levelled so `#0d0d0d` becomes `#000`, cropped to the lower 700px, WebP 86 KB. It's sized `max(100%, 960px)`, so phones keep the detail.

@@ -11,7 +11,8 @@
        Spec: resources/documentation/DESIGN_SYSTEM.md #}
     <div class="frame" aria-hidden="true"></div>
 
-    <div class="viewport">
+    {# tabindex + autofocus: with the scrollbar hidden, keyboard scrolling must work without a first click #}
+    <div class="viewport" tabindex="-1" autofocus>
         {% set active_page = active_page | default('') %}
         <nav class="navbar">
             <a href="/" class="nav-brand">Digit Recognition</a>

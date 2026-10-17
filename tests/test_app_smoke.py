@@ -57,7 +57,7 @@ class PagesTest(SmokeTestCase):
                             ("/stage3/", "/stage3/"), ("/history/", "/history/")):
             with self.subTest(url=url):
                 html = self.client.get(url).get_data(as_text=True)
-                for marker in ('class="frame"', 'class="viewport"', 'class="navbar"',
+                for marker in ('class="frame"', 'class="viewport" tabindex="-1" autofocus', 'class="navbar"',
                                'class="partners container"', "@tech_illumination"):
                     self.assertIn(marker, html)
                 if active:
