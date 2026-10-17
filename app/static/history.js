@@ -84,7 +84,7 @@
       year: 2020, error: 0.17, label: "SE-Network Committee",
       method: "Committee of 20 CNNs with Squeeze-and-Excitation Networks",
       detail: "A committee of 20 CNNs with Squeeze-and-Excitation (SE) channel-attention blocks achieved 0.17% error, well below estimated human-level performance. SE blocks learn per-channel importance weights, letting the network suppress uninformative feature maps. SE-Net architecture introduced by Hu et al. (arXiv:1709.01507).",
-      color: "#ec4899",
+      color: "#a3e635",
       sourceUrl: "https://github.com/Matuzas77/MNIST-0.17",
       sourceLabel: "Matuzas 2020 — github.com/Matuzas77/MNIST-0.17",
     },
@@ -120,8 +120,8 @@
     if (!m) return null;
     return e('div', {
       style: {
-        background: "#0c0f1a", border: "2px solid " + m.color, borderRadius: 10,
-        padding: "14px 18px", maxWidth: 320, color: "#e8edf5", fontSize: 13,
+        background: "#0d0d0d", border: "2px solid " + m.color, borderRadius: 0,
+        padding: "14px 18px", maxWidth: 320, color: "#ffffff", fontSize: 13,
         lineHeight: 1.5, boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
         fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
       },
@@ -130,10 +130,10 @@
         m.label + " (" + Math.floor(m.year) + ")"),
       e('div', { style: { color: m.color, fontWeight: 600, marginBottom: 6 } },
         "Error: " + m.error + "%"),
-      e('div', { style: { fontSize: 12, color: "#7c8a9e", marginBottom: 8 } }, m.method),
-      e('div', { style: { fontSize: 12, color: "#aab4c4" } }, m.detail),
+      e('div', { style: { fontSize: 12, color: "#8f8f8f", marginBottom: 8 } }, m.method),
+      e('div', { style: { fontSize: 12, color: "#c7c7c7" } }, m.detail),
       e('div', {
-        style: { marginTop: 10, paddingTop: 8, borderTop: "1px solid #333", fontSize: 11, color: "#7c8a9e" },
+        style: { marginTop: 10, paddingTop: 8, borderTop: "1px solid #303030", fontSize: 11, color: "#8f8f8f" },
       }, "📄 " + m.sourceLabel)
     );
   }
@@ -143,7 +143,7 @@
 
     return e('div', {
       style: {
-        color: "#e8edf5",
+        color: "#ffffff",
         fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
         width: "100%",
       },
@@ -152,40 +152,40 @@
       // Header
       e('div', { style: { maxWidth: 900, margin: "0 auto 32px" } },
         e('h1', {
-          style: { fontSize: 28, fontWeight: 800, color: "#fff", margin: "0 0 8px", lineHeight: 1.2 },
+          style: { fontSize: 31, fontWeight: 400, color: "#fff", margin: "0 0 8px", lineHeight: 1.2 },
         }, "MNIST Error Rate Milestones"),
-        e('p', { style: { fontSize: 14, color: "#7c8a9e", margin: 0, maxWidth: 700, lineHeight: 1.6 } },
+        e('p', { style: { fontSize: 14, color: "#8f8f8f", margin: 0, maxWidth: 700, lineHeight: 1.6 } },
           "How digit recognition error on the MNIST benchmark fell from an 0.80% SVM baseline (LeCun et al. 1998) to near-perfect 0.09% (An et al. 2020), crossing estimated human-level performance (≈0.20%) in 2011. Each milestone card links to its primary source.")
       ),
 
       // Chart
       e('div', {
         style: {
-          maxWidth: 900, margin: "0 auto 36px", background: "#0f1323",
-          borderRadius: 16, border: "1px solid rgba(255,255,255,0.06)", padding: "28px 20px 12px",
+          maxWidth: 900, margin: "0 auto 36px", background: "#000000",
+          borderRadius: 0, border: "1px solid #303030", padding: "28px 20px 12px",
         },
       },
         e(ResponsiveContainer, { width: "100%", height: 380 },
           e(LineChart, { data: chartData, margin: { top: 30, right: 40, bottom: 20, left: 20 } },
-            e(CartesianGrid, { strokeDasharray: "3 3", stroke: "rgba(255,255,255,0.06)" }),
+            e(CartesianGrid, { strokeDasharray: "3 3", stroke: "rgba(255,255,255,0.08)" }),
             e(XAxis, {
-              dataKey: "year", tick: { fill: "#7c8a9e", fontSize: 12 },
-              axisLine: { stroke: "#333" }, tickLine: { stroke: "#333" },
+              dataKey: "year", tick: { fill: "#8f8f8f", fontSize: 12 },
+              axisLine: { stroke: "#4c4c4c" }, tickLine: { stroke: "#4c4c4c" },
               domain: [1996, 2023], type: "number",
               tickFormatter: function(v) { return v; },
               ticks: [1998, 2003, 2006, 2010, 2011, 2020],
             }),
             e(YAxis, {
-              tick: { fill: "#7c8a9e", fontSize: 12 },
-              axisLine: { stroke: "#333" }, tickLine: { stroke: "#333" },
+              tick: { fill: "#8f8f8f", fontSize: 12 },
+              axisLine: { stroke: "#4c4c4c" }, tickLine: { stroke: "#4c4c4c" },
               domain: [0, 1.0],
               tickFormatter: function(v) { return v + "%"; },
-              label: { value: "Test Error Rate (%)", angle: -90, position: "insideLeft", offset: -5, style: { fill: "#7c8a9e", fontSize: 12 } },
+              label: { value: "Test Error Rate (%)", angle: -90, position: "insideLeft", offset: -5, style: { fill: "#8f8f8f", fontSize: 12 } },
             }),
             e(RechartsTooltip, { content: CustomTooltip }),
             e(ReferenceLine, {
               y: humanError, stroke: "#ef4444", strokeDasharray: "6 4", strokeWidth: 1.5,
-              label: { value: "≈ Human level (0.2%)", position: "right", fill: "#ef4444", fontSize: 12, fontWeight: 600 },
+              label: { value: "≈ Human level (0.2%)", position: "insideTopRight", fill: "#ef4444", fontSize: 12, fontWeight: 600 },
             }),
             e(Line, {
               type: "monotone", dataKey: "error", stroke: "#38bdf8", strokeWidth: 3,
@@ -199,13 +199,13 @@
             })
           )
         ),
-        e('div', { style: { textAlign: "center", fontSize: 12, color: "#7c8a9e", marginTop: 4 } },
+        e('div', { style: { textAlign: "center", fontSize: 12, color: "#8f8f8f", marginTop: 4 } },
           "Hover or tap data points for details. The dashed red line marks approximate human-level performance.")
       ),
 
       // Milestone cards
       e('div', { style: { maxWidth: 900, margin: "0 auto" } },
-        e('h2', { style: { fontSize: 16, fontWeight: 700, color: "#fff", margin: "0 0 16px", letterSpacing: "-0.01em" } },
+        e('h2', { style: { fontSize: 16, fontWeight: 500, color: "#fff", margin: "0 0 16px", letterSpacing: "-0.01em" } },
           "Milestone Details"),
         e('div', { style: { display: "flex", flexDirection: "column", gap: 12 } },
           ...milestones.map(function(m, i) {
@@ -214,27 +214,27 @@
               key: i,
               onClick: function() { setSelected(isOpen ? null : i); },
               style: {
-                background: isOpen ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.02)",
-                border: "1px solid " + (isOpen ? m.color + "66" : "rgba(255,255,255,0.06)"),
-                borderRadius: 12, padding: "16px 20px", cursor: "pointer", transition: "all 0.2s ease",
+                background: isOpen ? "#0d0d0d" : "#000000",
+                border: "1px solid " + (isOpen ? m.color : "#303030"),
+                borderRadius: 0, padding: "16px 20px", cursor: "pointer", transition: "all 0.2s ease",
               },
             },
               e('div', { style: { display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" } },
                 e('div', { style: { width: 10, height: 10, borderRadius: "50%", background: m.color, flexShrink: 0 } }),
                 e('span', { style: { fontWeight: 700, color: "#fff", fontSize: 15 } }, Math.floor(m.year)),
-                e('span', { style: { color: "#aab4c4", fontSize: 14 } }, m.label),
+                e('span', { style: { color: "#c7c7c7", fontSize: 14 } }, m.label),
                 m.error !== null && e('span', {
-                  style: { marginLeft: "auto", background: m.color + "22", color: m.color, padding: "2px 10px", borderRadius: 20, fontSize: 13, fontWeight: 700 },
+                  style: { marginLeft: "auto", background: m.color + "22", color: m.color, padding: "2px 10px", borderRadius: 0, border: "1px solid " + m.color, fontSize: 13, fontWeight: 600 },
                 }, m.error + "%"),
                 m.isOrigin && e('span', {
-                  style: { marginLeft: "auto", background: "rgba(56,189,248,0.10)", color: "#38bdf8", padding: "2px 10px", borderRadius: 20, fontSize: 12, fontWeight: 600 },
+                  style: { marginLeft: "auto", background: "transparent", color: "#38bdf8", padding: "2px 10px", borderRadius: 0, border: "1px solid #38bdf8", fontSize: 12, fontWeight: 600 },
                 }, "Origin")
               ),
               isOpen && e('div', {
-                style: { marginTop: 14, paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.08)" },
+                style: { marginTop: 14, paddingTop: 12, borderTop: "1px solid #303030" },
               },
-                e('div', { style: { fontSize: 12, color: "#7c8a9e", marginBottom: 6, fontWeight: 600 } }, m.method),
-                e('p', { style: { fontSize: 13, color: "#aab4c4", margin: "0 0 12px", lineHeight: 1.65 } }, m.detail),
+                e('div', { style: { fontSize: 12, color: "#8f8f8f", marginBottom: 6, fontWeight: 600 } }, m.method),
+                e('p', { style: { fontSize: 13, color: "#c7c7c7", margin: "0 0 12px", lineHeight: 1.65 } }, m.detail),
                 e('a', {
                   href: m.sourceUrl,
                   target: "_blank", rel: "noopener noreferrer",
@@ -242,7 +242,7 @@
                   style: {
                     display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12,
                     color: m.color, textDecoration: "none", fontWeight: 600,
-                    background: m.color + "11", padding: "6px 14px", borderRadius: 8,
+                    background: "transparent", padding: "6px 14px", borderRadius: 0,
                     border: "1px solid " + m.color + "33",
                   },
                 }, m.sourceLabel + " →")
@@ -256,42 +256,42 @@
       e('div', {
         style: {
           maxWidth: 900, margin: "36px auto 0",
-          background: "rgba(56, 189, 248, 0.06)", border: "1px solid rgba(56,189,248,0.15)",
-          borderRadius: 12, padding: "20px 24px",
+          background: "#000000", border: "1px solid #38bdf8",
+          borderRadius: 0, padding: "20px 24px",
         },
       },
-        e('p', { style: { fontSize: 13, color: "#aab4c4", margin: 0, lineHeight: 1.7 } },
+        e('p', { style: { fontSize: 13, color: "#c7c7c7", margin: 0, lineHeight: 1.7 } },
           "Starting from an 0.80% SVM baseline in 1998, the MNIST error rate stagnated near 0.4% for almost a decade (2003–2010). The breakthrough to human-level performance came primarily from GPU acceleration enabling deeper networks and larger ensembles — not fundamentally new algorithms. Post-2011, advances in regularisation (DropConnect, 2013) and attention mechanisms (SE-Networks, 2020) pushed error well below human level. By 2020 an ensemble of just three CNNs reached 0.09%, limited mainly by the dataset’s own known mislabelled test images."
         )
       ),
 
       // Footer
       e('div', { style: { maxWidth: 900, margin: "24px auto 0", textAlign: "center", lineHeight: 2 } },
-        e('span', { style: { fontSize: 11, color: "#7c8a9e" } }, "Sources: "),
+        e('span', { style: { fontSize: 11, color: "#8f8f8f" } }, "Sources: "),
         e('a', {
           href: "https://arxiv.org/abs/1404.7828",
           target: "_blank", rel: "noopener noreferrer",
-          style: { fontSize: 11, color: "#7c8a9e", textDecoration: "underline", textUnderlineOffset: "3px" },
+          style: { fontSize: 11, color: "#8f8f8f", textDecoration: "underline", textUnderlineOffset: "3px" },
         }, "Schmidhuber (2014) arXiv:1404.7828"),
-        e('span', { style: { fontSize: 11, color: "#7c8a9e" } }, " · "),
+        e('span', { style: { fontSize: 11, color: "#8f8f8f" } }, " · "),
         e('a', {
           href: "https://doi.org/10.1109/5.726791",
           target: "_blank", rel: "noopener noreferrer",
-          style: { fontSize: 11, color: "#7c8a9e", textDecoration: "underline", textUnderlineOffset: "3px" },
+          style: { fontSize: 11, color: "#8f8f8f", textDecoration: "underline", textUnderlineOffset: "3px" },
         }, "LeCun et al. (1998) IEEE"),
-        e('span', { style: { fontSize: 11, color: "#7c8a9e" } }, " · "),
+        e('span', { style: { fontSize: 11, color: "#8f8f8f" } }, " · "),
         e('a', {
           href: "https://arxiv.org/abs/1202.2745",
           target: "_blank", rel: "noopener noreferrer",
-          style: { fontSize: 11, color: "#7c8a9e", textDecoration: "underline", textUnderlineOffset: "3px" },
+          style: { fontSize: 11, color: "#8f8f8f", textDecoration: "underline", textUnderlineOffset: "3px" },
         }, "Ciresan et al. (2012) arXiv:1202.2745"),
-        e('span', { style: { fontSize: 11, color: "#7c8a9e" } }, " · "),
+        e('span', { style: { fontSize: 11, color: "#8f8f8f" } }, " · "),
         e('a', {
           href: "https://arxiv.org/abs/2008.10400",
           target: "_blank", rel: "noopener noreferrer",
-          style: { fontSize: 11, color: "#7c8a9e", textDecoration: "underline", textUnderlineOffset: "3px" },
+          style: { fontSize: 11, color: "#8f8f8f", textDecoration: "underline", textUnderlineOffset: "3px" },
         }, "An et al. (2020) arXiv:2008.10400"),
-        e('span', { style: { fontSize: 11, color: "#7c8a9e" } }, " · ")
+        e('span', { style: { fontSize: 11, color: "#8f8f8f" } }, " · ")
       ),
     );
   }

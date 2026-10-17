@@ -1,0 +1,20 @@
+{# Partners footer — on every page via base.html. Add a partner: one more <li>
+   (logo 64×64 in static/img/partners/). Entries share the row width, centred. #}
+<footer class="partners container">
+    <ul class="partners-list">
+        <li class="partner">
+            <img src="{{ url_for('static', filename='img/partners/sreda_obitaniya.png') }}" alt="Sreda obitaniya logo" width="64" height="64">
+            <div class="partner-text">
+                <span>Среда обитания</span>
+                <span class="partner-handle">@obitaniya_sreda</span>
+            </div>
+        </li>
+        <li class="partner">
+            <img src="{{ url_for('static', filename='img/partners/tech_prosvet.png') }}" alt="Tech.ProSvet logo" width="64" height="64">
+            <div class="partner-text">
+                <span>Tech.ProSvet</span>
+                <span class="partner-handle">@tech_illumination</span>
+            </div>
+        </li>
+    </ul>
+</footer>
