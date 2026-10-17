@@ -1,13 +1,37 @@
-# Local development stack (master / dev branches). The deploy branch keeps
-# its own production version (web_server + nginx + certbot) — see
-# resources/documentation/GITFLOW_INIT.md §3.5.
+# Production stack (deploy branch only — master/dev keep the local version).
+# Values come from .env next to this file (DOMAIN, CERTBOT_EMAIL); first
+# start and certificate bootstrap: resources/documentation/DEPLOY_INIT.md.
 services:
 
   web_server:
     build: ./app
     image: dr_web_server:latest
     container_name: dr_web_server
-    restart: unless-stopped
+    restart: always
+
+  nginx:
+    image: nginx:alpine
+    container_name: dr_nginx
+    restart: always
     ports:
-      # Host port from WEB_HOST_PORT (.env), default 8008 — same as the container's.
-      - "${WEB_HOST_PORT:-8008}:8008"
+      - "80:80"
+      - "443:443"
+    environment:
+      # Rendered into /etc/nginx/conf.d/ from nginx/templates/*.template
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./nginx/templates:/etc/nginx/templates:ro
+      - ./nginx/certbot/conf:/etc/letsencrypt:ro
+      - ./nginx/certbot/www:/var/www/html:ro
+    depends_on:
+      - web_server
+
+  certbot:
+    image: certbot/certbot
+    container_name: dr_certbot
+    volumes:
+      - ./nginx/certbot/conf:/etc/letsencrypt:rw
+      - ./nginx/certbot/www:/var/www/html:rw
+    # Runs once per `up` and exits; --keep-until-expiring makes that a no-op
+    # until renewal is due (no forced re-issue on every start).
+    command: certonly --webroot -w /var/www/html/ --keep-until-expiring --non-interactive --agree-tos --no-eff-email --email ${CERTBOT_EMAIL} -d ${DOMAIN}
