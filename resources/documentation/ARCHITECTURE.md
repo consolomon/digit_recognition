@@ -78,9 +78,20 @@ code on load.
   `app/static/style.css` (Google Fonts import, `body` font stack
   `'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace`). Never
   introduce another font family without the owner's approval.
-- Every page carries the same navbar (brand + Stage 1/2/3/History tabs,
-  `active` on the current one) and uses the colour tokens on `:root` in
-  `style.css`.
+- Every page `{% extends 'base.html' %}`. The base template carries the
+  page shell: the fixed white frame, the scroll window, the navbar
+  (brand + Stage 1/2/3/History tabs, `active` + `aria-current` on the
+  current one) and the partners footer (`partials/_partners.html`). Never
+  copy the navbar or footer into a page.
+- The visual language is the **"Signal on Black"** design system
+  (`DESIGN_SYSTEM.md`):
+  - a black field, grey steps, and a **single accent `#38bdf8`**
+    (categorical colours only in the History chart, no pink);
+  - only the tokens on `:root` in `style.css`;
+  - new components are added through `DESIGN_SYSTEM.md` §"Extending".
+- Redesigns are visual only. Stage scripts find their elements by id
+  (`grid`, `recognizeBtn`, `result`, …), so ids and the `#result` contract
+  stay. `PagesTest.test_page_script_hooks` guards them.
 
 ---
 
@@ -91,3 +102,4 @@ code on load.
 | ARCH-1 | 2026-10-17 | Training data stays in git but out of the Docker image (`.dockerignore`); the image carries only what recognition needs. |
 | ARCH-2 | 2026-10-17 | Pickle guardrail above made explicit (module paths, NumPy ≥ 2). |
 | ARCH-3 | 2026-10-17 | JetBrains Mono rule moved from Claude's memory into this file. |
+| ARCH-4 | 2026-10-17 | B-10: the "Signal on Black" design system replaces the navy 1.0 UI. Owner's choices: keep the `#38bdf8` accent and JetBrains Mono; pure black field with the poster's network image (background A, over the generated SVG B); a fixed frame with the content scrolling inside; partners footer on every page; History keeps categorical colours (pink → lime). Templates moved to `base.html` + partials. Spec: `DESIGN_SYSTEM.md`. |

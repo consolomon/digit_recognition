@@ -1,0 +1,33 @@
+{
+  "v": 3,
+  "layout": "files",
+  "createdOnFiles": {"v": 1, "at": "2026-10-17T14:40:00Z"},
+  "title": "Signal on Black",
+  "namespace": "SignalOnBlack",
+  "libraries": [],
+  "sections": {},
+  "groups": ["Partners", "Backgrounds"],
+  "assetGroups": {
+    "Partners": {
+      "name": "Partners",
+      "tile": "m",
+      "order": ["sreda_obitaniya.png", "tech_prosvet.png"],
+      "files": {
+        "sreda_obitaniya.png": {"name": "sreda_obitaniya.png", "blob": "caf1af187ec1fb825b336595b0227df2", "size": 17992, "type": "image/png"},
+        "tech_prosvet.png": {"name": "tech_prosvet.png", "blob": "f81cfb7b88d8c4d4ec6b712436aed8bc", "size": 6124, "type": "image/png"}
+      }
+    },
+    "Backgrounds": {
+      "name": "Backgrounds",
+      "tile": "l",
+      "order": ["network_bg.webp", "network.svg"],
+      "files": {
+        "network_bg.webp": {"name": "network_bg.webp", "blob": "b8be9e2433da11c7740715a087696dcb", "size": 85694, "type": "image/webp"},
+        "network.svg": {"name": "network.svg", "blob": "86f0a14cb25359f1211bf57b8adc230f", "size": 52695, "type": "image/svg+xml"}
+      }
+    }
+  },
+  "blobs": {},
+  "docs": {"readme": "project/README.md", "sections": []},
+  "lastChange": {"by": "consolomon", "at": "2026-10-17T14:40:00Z", "via": "GitHub · consolomon/digit_recognition@0ad71f2", "note": "First sync from app/static/style.css (B-10 draft 0.1)"}
+}

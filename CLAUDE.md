@@ -96,6 +96,7 @@ things live:
 | Doc | Holds |
 |---|---|
 | `ARCHITECTURE.md` | The app's design record and guardrails — stages, route contracts, the **pickled-weights module-path guardrail**, UI rules (JetBrains Mono), decisions log (ARCH-n). **Read before touching a stage's model code, weights, a route contract or shared UI.** |
+| `DESIGN_SYSTEM.md` | The "Signal on Black" UI design system: tokens, page shell, components, the single-accent rule, how to add a component. **Read before touching templates or `style.css`.** |
 | `BACKLOG.md` | Open decisions (OD-n), backlog items (B-n), what's in progress on which feature branch, what shipped in which version |
 | `GITFLOW.md` | Day-to-day branch workflow, feature cycle, `DEPLOY_KEEP`, inherited hazards |
 | `GITFLOW_INIT.md` | Repo bootstrap, branch file inventory, adaptation record |
@@ -292,8 +293,10 @@ Strict and project-wide:
 | What | Where |
 |---|---|
 | Flask entry point and routes | `app/app.py` |
-| Jinja templates | `app/templates/` |
+| Jinja templates | `app/templates/` — every page extends `base.html`; shared fragments in `app/templates/partials/` |
 | Static JS / CSS | `app/static/` — `style.css` shared by every page, one `stageN.js` per stage |
+| Static images served by the app | `app/static/img/` (partner logos in `img/partners/`) |
+| Design sources (PSD/JPG, extracted reference dataset, philosophy) | `resources/design/` (`reference/` for derived data) |
 | A stage's model code **and its data** (weights, datasets) | `app/stageN/` |
 | Python modules shared by several stages | `app/lib/` (create it when first needed) |
 | Production reverse-proxy config | `nginx/` (`templates/*.template`, rendered by the nginx image) |

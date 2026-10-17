@@ -1,38 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Stage 2 — Digit Recognition</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <nav class="navbar">
-        <a href="/" class="nav-brand">Digit Recognition</a>
-        <div class="nav-tabs">
-            <a href="/stage1/" class="nav-tab">Stage 1</a>
-            <a href="/stage2/" class="nav-tab active">Stage 2</a>
-            <a href="/stage3/" class="nav-tab">Stage 3</a>
-            <a href="/history/" class="nav-tab">History</a>
-        </div>
-    </nav>
+{% extends 'base.html' %}
+{% set active_page = 'stage2' %}
 
-    <main class="stage-main">
-        <h1>Stage 2 — Digit Recognition</h1>
-        <p class="stage-desc">Draw a digit (0–9) on the 3×5 grid, then click <em>Recognize</em>.</p>
+{% block title %}Stage 2 — Digit Recognition{% endblock %}
 
-        <div class="stage-layout">
-            <div class="box">
+{% block content %}
+    <main class="stage-main container">
+        <header class="stage-header">
+            <span class="label label-accent">Stage 02</span>
+            <h1>Stage 2 — Digit Recognition</h1>
+            <p class="stage-desc">Draw a digit (0–9) on the 3×5 grid, then click <em>Recognize</em>.</p>
+        </header>
+
+        <div class="workspace">
+            <div class="panel">
                 <div class="grid" id="grid"></div>
             </div>
-            <div class="box side-menu">
+            <div class="panel controls side-menu">
+                <span class="label">Controls</span>
                 <button class="btn recognize-btn" id="learnBtn">Learn</button>
                 <button class="btn recognize-btn" id="recognizeBtn">Recognize</button>
-                <button class="btn refresh-btn" id="refreshBtn">Refresh</button>
+                <button class="btn btn-ghost refresh-btn" id="refreshBtn">Refresh</button>
             </div>
+            <section class="output" aria-live="polite">
+                <span class="label">Output</span>
+                <div class="result-box" id="result"></div>
+            </section>
         </div>
-        <div class="result-box" id="result"></div>
     </main>
+{% endblock %}
 
+{% block scripts %}
     <script src="{{ url_for('static', filename='stage2.js') }}"></script>
-</body>
-</html>
+{% endblock %}
