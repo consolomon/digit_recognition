@@ -22,7 +22,7 @@
 #   - checks every file in scripts/gitflow/starter/MANIFEST exists and the
 #     GitHub repository does NOT exist yet
 #   - master: starter pack (minus _deploy/ and MANIFEST) + the gitflow scripts
-#     in scripts/gitflow/ + the generated gitflow.conf -> commit "<VERSION> init: starter pack"
+#     and the developer guide (README.md) in scripts/gitflow/ + the generated gitflow.conf -> commit "<VERSION> init: starter pack"
 #   - deploy: master + the starter/_deploy/ overlay (prod docker-compose.yaml)
 #     -> commit "<VERSION+1 patch> init deploy branch: prod compose"
 #   - creates the GitHub repository, pushes master and deploy, allows merge
@@ -42,8 +42,9 @@ esac
 # The pack root is the folder that holds scripts/gitflow/; every pack path below is relative to it.
 cd "$SELF_DIR/../.."
 PACK="scripts/gitflow/starter"
+# Copied into the new repository's scripts/gitflow/ (README.md = the developer guide)
 SCRIPTS=(lib.sh new_stage.sh finish_stage.sh promote_master.sh promote_deploy.sh
-         sync_deploy_vps.sh dr_rebuild.sh gitflow_init.sh)
+         sync_deploy_vps.sh dr_rebuild.sh gitflow_init.sh README.md)
 
 info "1. tools"
 need_cmd git; need_cmd gh "https://cli.github.com"

@@ -293,12 +293,13 @@ and prints its own help with `--help`.
 | `scripts/gitflow/promote_deploy.sh` | `/promote-deploy` + `merge_to_deploy.sh` | Anyone: `deploy` becomes `dev/<dev>`'s tree (incoming dev wins), deploy-owned paths kept, `Promoted-From:` trailer; temp worktree |
 | `scripts/gitflow/sync_deploy_vps.sh --master \| --dev` | `/sync-deploy-vps` | VPS: hotfix capture → cherry-pick the hotfix commits onto `master` (via `hotfix/<V>` + PR) or onto the last promoter's `dev/<x>`; prints restart reminders |
 | `scripts/gitflow/dr_rebuild.sh [--no-cache] [--check-only]` | `scripts/dr_rebuild.sh` | Build → optional `IMAGE_TEST_CMD` in the new image → recreate → `curl` localhost (dev compose) or `https://<server_name>/` (prod compose) |
+| `scripts/gitflow/README.md` | — | The developer guide (developers only, not the tutor): join, stage cycle, version bumps, sharing, deploy, taking `master` in by hand, troubleshooting. Shipped into every course repo |
 | `scripts/gitflow/lib.sh`, `scripts/gitflow/gitflow.conf` | — | Shared helpers; per-repo settings (`APP_DIR`, `WEB_SERVICE`, `APP_PORT`, `TEST_CMD`, `IMAGE_TEST_CMD`, `REQUIRED_TOOLS`, `DEPLOY_OWNED` / `DEV_ONLY` / `DEPLOY_KEEP`) |
 | `scripts/gitflow/starter/` | — | The starter pack (`MANIFEST` = required files; `_deploy/` = deploy overlay). Seeded with this project's `docker-compose.yaml`, `.gitignore`, `VERSION`, `nginx/default.conf`, `app/Dockerfile`, `app/requirements.txt`; stage material (B-14): `app/stage1/model1.py` (recalibrated), `app/stage2/serialization_utils.py` (`jsonify` / `dejsonify`; imports `.neuron`, which the learner writes), `app/stage2/dataset.json` (training + validation). Copies of this project's `app/` files — re-copy after changing them; the owner extends it |
 
 Distribution: the tutor holds `scripts/gitflow/`; `gitflow_master_init.sh`
-commits the starter pack **and** the scripts (minus itself and the pack)
-into the new repo, so developers get them with the clone. Only
+commits the starter pack **and** the scripts plus `README.md` (minus
+itself and the pack) into the new repo, so developers get them with the clone. Only
 `gitflow_init.sh` (self-contained) is handed out before that.
 
 ### Model
