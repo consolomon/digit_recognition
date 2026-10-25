@@ -15,8 +15,8 @@ production.
 
 | Stage | Input | Model | Code |
 |---|---|---|---|
-| 1 — Binary classification | 3×3 grid (9 × 0/1) | one hand-weighted neuron: 0 vs 1 | `app/stage1/model1.py` |
-| 2 — Digit recognition | 5×3 grid (15 × 0/1) | 10 sigmoid neurons, trained in-app on 19 patterns | `app/stage2/` |
+| 1 — Binary classification | 3×3 grid (9 × 0/1) | one linear neuron: 0 vs 1, integer weights fitted on 40 labelled grids, output anchored at the reference 0 / 1 and clamped to [0, 1] (ARCH-5) | `app/stage1/model1.py` |
+| 2 — Digit recognition | 5×3 grid (15 × 0/1) | 10 sigmoid neurons, trained in-app on 19 inline patterns; a 40 + 10 training / validation set waits in `stage2/dataset.json` (ARCH-5) | `app/stage2/` |
 | 3 — MNIST recognition | 280×280 canvas → 28×28 grey | multi-layer net (leaky ReLU hidden, sigmoid output), trained offline on EMNIST-MNIST | `app/stage3/` |
 
 Plus `/history/` — a React + Recharts dashboard of MNIST error-rate
@@ -45,6 +45,7 @@ The page scripts (`app/static/stageN.js`) depend on exactly these shapes;
 |---|---|
 | `app/app.py` | Flask app, all routes; puts its own dir on `sys.path` |
 | `app/stage2/weights.data` | pickled `list[stage2.neuron.Neuron]` |
+| `app/stage2/dataset.json` | stage 2 digit dataset: `training` (10 ideals + 3 variations per digit) and `validation` (1 unseen sample per digit), 15-cell row-major pixel lists; read with `SerializationUtils.dejsonify`, written with `jsonify`. In the image (small; the in-app trainer will need it once wired) |
 | `app/stage3/weights.data` | pickled `list[NeuronLayer]` (7.3 MB) |
 | `app/stage3/emnist-mnist-*-ubyte` | EMNIST-MNIST train/test sets (53 MB), **training only** — kept in git, kept out of the image (`app/.dockerignore`) |
 | `app/templates/`, `app/static/` | pages; `style.css` shared, one `stageN.js` per stage |
@@ -103,3 +104,4 @@ code on load.
 | ARCH-2 | 2026-10-17 | Pickle guardrail above made explicit (module paths, NumPy ≥ 2). |
 | ARCH-3 | 2026-10-17 | JetBrains Mono rule moved from Claude's memory into this file. |
 | ARCH-4 | 2026-10-17 | B-10: the "Signal on Black" design system replaces the navy 1.0 UI. Owner's choices: keep the `#38bdf8` accent and JetBrains Mono; pure black field with the poster's network image (background A, over the generated SVG B); a fixed frame with the content scrolling inside; partners footer on every page; History keeps categorical colours (pink → lime). Templates moved to `base.html` + partials. Spec: `DESIGN_SYSTEM.md`. |
+| ARCH-5 | 2026-10-25 | B-14: stage 1 recalibrated — weights `[0,4,0, 2,-6,2, 0,4,0]`, bias −7, `zero% = clamp((total + 5) / 10)` (owner: keep the linear output, rescaled + clamped); the centre cell is the "1" signal, the edge midpoints the "0" ring, corners carry no evidence. Stage 2 gains `dataset.json` + `SerializationUtils.jsonify` / `dejsonify`; `LearningEngine` still trains on its inline 19 patterns (`generation % 19`) and `weights.data` is unchanged — on the new validation set it scores 7/10, a fresh net trained on the JSON set 9–10/10 (5 seeds). `tests/test_models.py` pins both. |

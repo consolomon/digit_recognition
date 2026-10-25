@@ -38,12 +38,14 @@ Found while reading the code for the workflow upgrade (2026-10-17).
 | B-11 | `history.html` loads React, ReactDOM, prop-types and Recharts from unpkg with floating versions (`react@18`, `recharts@2`) | pin exact versions (or vendor them into `static/`), so a CDN release can't break History |
 | B-12 | `app/static/MNIST_Dashboard.jsx` (B-9's unused copy) still carries the 1.0 navy colours and the pink milestone | resolve together with B-9: delete it, or regenerate it from `history.js` |
 | B-13 | AI-free multi-developer gitflow as bash scripts for a new learning repo (rebuild the app stage 1 → 3, several developers independently) | owner request 2026-10-25. `scripts/gitflow/`: `new_stage.sh`, `finish_stage.sh`, `promote_master.sh` (PR), `promote_deploy.sh` (incoming dev wins), `sync_deploy_vps.sh` (`--master` / `--dev`), `dr_rebuild.sh` (curl check), `gitflow_init.sh`, `gitflow_master_init.sh`, `lib.sh`, `gitflow.conf`, `starter/` pack. Language-agnostic; VPS back-port by cherry-pick (owner 2026-10-25). Plus: this project's `scripts/dr_rebuild.sh` gets the end-to-end curl check (localhost on master/dev, public domain with the prod compose) |
+| B-14 | Stage material for the starter pack: recalibrated stage 1 weights, a stage 2 training + validation dataset in JSON, `SerializationUtils.jsonify` / `dejsonify` | owner request 2026-10-25, folded into B-13 on `feature/multidev-gitflow` (owner). Changed in `app/` first, then copied into `scripts/gitflow/starter/app/`. Stage 1: linear output kept, rescaled and clamped (owner) — 40/40 labelled grids vs 35/40 before, output within [0, 1] (was −0.05…1.05). Stage 2: `app/stage2/dataset.json` = 10 ideals + 3 variations per digit (training, 40) and 1 unseen sample per digit (validation, 10); the 9 old inline variations are not in it (owner). `LearningEngine` and `weights.data` untouched (owner: data + methods only) — wiring them is a follow-up. Pinned by `tests/test_models.py` |
 
 ## In progress
 
 | Item | Branch | Started |
 |---|---|---|
 | B-13 multi-developer gitflow scripts | `feature/multidev-gitflow` | 2026-10-25 |
+| B-14 starter-pack stage material (folded into B-13) | `feature/multidev-gitflow` | 2026-10-25 |
 
 ## Done
 

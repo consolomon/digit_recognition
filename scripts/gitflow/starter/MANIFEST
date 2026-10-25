@@ -7,4 +7,10 @@ VERSION
 nginx/default.conf
 app/Dockerfile
 app/requirements.txt
+# Stage material (copies of this project's app/ files): the recalibrated stage 1
+# neuron, the stage 2 JSON helpers (import .neuron — the learner writes
+# stage2/neuron.py) and the stage 2 training + validation dataset
+app/stage1/model1.py
+app/stage2/serialization_utils.py
+app/stage2/dataset.json
 _deploy/docker-compose.yaml
