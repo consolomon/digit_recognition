@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # On the VPS: capture a hotfix made on the deploy checkout and back-port it.
 #
-#   scripts/gitflow/sync_deploy_vps.sh --master
-#   scripts/gitflow/sync_deploy_vps.sh --dev
-#   scripts/gitflow/sync_deploy_vps.sh --help
+#   ./sync_deploy_vps.sh --master
+#   ./sync_deploy_vps.sh --dev
+#   ./sync_deploy_vps.sh --help
 #
 #   --master   back-port into master: branch hotfix/<VERSION> + pull request to master
 #              (no dev branch is touched)
@@ -18,7 +18,7 @@
 #      branch + 1 patch), pushed to deploy; a clean tree just fast-forwards
 #   B. the hotfix commits (made on deploy since its last promote) are
 #      cherry-picked in a temporary worktree onto the target; the target keeps
-#      its own DEPLOY_OWNED / DEV_ONLY paths (scripts/gitflow/gitflow.conf).
+#      its own DEPLOY_OWNED / DEV_ONLY paths (gitflow.conf).
 #      Every collision asks: keep the hotfix side, keep the target side,
 #      edit in $EDITOR, or abort.
 #   C. shows the result, commits "<VERSION> back-port: <subject>", pushes (asks first)
@@ -211,7 +211,7 @@ else
     if [ -n "$PR_HEAD" ]; then
       if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
         gh pr create --base master --head "$PR_HEAD" --title "$V merge: $PR_HEAD → master" \
-          --body "VPS hotfix back-port by scripts/gitflow/sync_deploy_vps.sh --$MODE." || warn "gh pr create failed — open it by hand"
+          --body "VPS hotfix back-port by ./sync_deploy_vps.sh --$MODE." || warn "gh pr create failed — open it by hand"
       else
         echo "gh not available — open the pull request in the browser: $REPO_URL/compare/master...$PR_HEAD"
       fi
@@ -226,6 +226,6 @@ any=""
 if grep -q "^$APP_DIR/" <<< "$CH"; then echo "  $APP_DIR/ changed:                docker compose up -d --build $WEB_SERVICE"; any=1; fi
 if grep -q '^nginx/' <<< "$CH"; then echo "  nginx/ changed:                docker compose up -d --force-recreate nginx"; any=1; fi
 if grep -qx 'docker-compose.yaml' <<< "$CH"; then echo "  docker-compose.yaml changed:   docker compose up -d --build"; any=1; fi
-if [ -n "$any" ]; then echo "  then verify end to end:        scripts/gitflow/dr_rebuild.sh --check-only"; else echo "  nothing to restart"; fi
+if [ -n "$any" ]; then echo "  then verify end to end:        ./dr_rebuild.sh --check-only"; else echo "  nothing to restart"; fi
 echo
 echo "master is only changed through pull requests; tell the team if a dev branch moved."

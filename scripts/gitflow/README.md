@@ -1,9 +1,10 @@
 # Gitflow scripts: developer guide
 
-You rebuild the app stage by stage (stage 1 → 3) in your own branches and
+You develop the project stage by stage (stage 1 → 3) in your own branches and
 share each result with the team. These bash scripts do the git work for you.
-Run every command from the project root. Each script prints its own help
-with `--help`, and asks before every push.
+They sit at the project root next to this guide: run every command from the
+project root, as `./<script>.sh`. Each script prints its own help with
+`--help`, and asks before every push.
 
 ## How the branches work
 
@@ -30,11 +31,15 @@ Every commit message starts with the version: `1.2.3 <subject>`.
 
 ## 1. Join the repository (once per machine)
 
-Get `gitflow_init.sh` from your tutor and run it in the folder where the
-project should be created. Pick a lowercase nickname; it becomes part of your
-branch names.
+Create a new folder for the project and put the files from your tutor in
+it: `gitflow_init.sh` and this `README.md`. Run the script **inside that
+folder**: the folder becomes the project root, and the repository is cloned
+right into it. Pick a lowercase nickname; it becomes part of your branch
+names.
 
 ```bash
+mkdir digit-recognition && cd digit-recognition
+# put gitflow_init.sh and README.md here, then:
 bash gitflow_init.sh --devname alice
 ```
 
@@ -42,19 +47,23 @@ The script asks for:
 - GitHub login (if `gh` isn't logged in yet);
 - `https` or `ssh`;
 - the repository (`owner/name`, from the tutor). It accepts your pending invitation if you have one;
-- the folder to clone into;
 - your name and email for commits.
 
-When it finishes you have a clone with `dev/alice` checked out and pushed.
+When it finishes, the folder holds the whole project with `dev/alice`
+checked out and pushed:
+- **Files you placed there that the repository also has:** identical ones are just taken over. If yours differ, the script asks before replacing them with the repository's version, and keeps your copies in `.git/gitflow-replaced/`.
+- **Any other files:** stay as they are, untracked.
+- **If the folder sits inside another git repository:** the script stops. Use a folder outside it.
 
-On a **new machine**, run the same command again: it resumes your existing
-`dev/alice` instead of creating a new one.
+On a **new machine**, do the same again: it resumes your existing
+`dev/alice` instead of creating a new one. Inside an existing clone, run
+`./gitflow_init.sh --devname alice` to set that clone up.
 
 ## 2. Start a stage
 
 ```bash
 cd <project folder>
-scripts/gitflow/new_stage.sh --number 1 --name binary-classification
+./new_stage.sh --number 1 --name binary-classification
 ```
 
 - You're now on `stage-1/alice/binary-classification`.
@@ -78,9 +87,9 @@ git push                                             # optional backup, any time
 ## 4. Test it locally in Docker
 
 ```bash
-scripts/gitflow/dr_rebuild.sh            # build, (image tests), restart, curl check
-scripts/gitflow/dr_rebuild.sh --no-cache # full rebuild
-scripts/gitflow/dr_rebuild.sh --check-only
+./dr_rebuild.sh            # build, (image tests), restart, curl check
+./dr_rebuild.sh --no-cache # full rebuild
+./dr_rebuild.sh --check-only
 ```
 
 - A successful run ends with `http://127.0.0.1:<port>/ -> 200`. Open that URL and try your stage by hand.
@@ -91,7 +100,7 @@ scripts/gitflow/dr_rebuild.sh --check-only
 Commit everything first, then run:
 
 ```bash
-scripts/gitflow/finish_stage.sh
+./finish_stage.sh
 ```
 
 1. It runs the automated tests (if the repo has any).
@@ -106,13 +115,13 @@ stage branch. Resolve it there, then run `finish_stage.sh` again:
 ```bash
 git merge dev/alice      # fix the files git lists, then:
 git add -A && git commit -m "$(cat VERSION) merge: dev/alice → stage branch"
-scripts/gitflow/finish_stage.sh
+./finish_stage.sh
 ```
 
 ## 6. Share your work with the team
 
 ```bash
-scripts/gitflow/promote_master.sh
+./promote_master.sh
 ```
 
 - It opens a pull request from `dev/alice` to `master`, or updates the one that's already open, and prints the link.
@@ -122,7 +131,7 @@ scripts/gitflow/promote_master.sh
 ## 7. Put your version on production (optional)
 
 ```bash
-scripts/gitflow/promote_deploy.sh
+./promote_deploy.sh
 ```
 
 - `deploy` becomes your `dev/alice` (incoming dev wins). The production-only files, like the server's `docker-compose.yaml`, are kept.
@@ -153,10 +162,11 @@ git push
 
 | Message | What to do |
 |---|---|
-| `no developer name in this clone` | `scripts/gitflow/gitflow_init.sh --devname <you>` inside the clone |
+| `no developer name in this clone` | `./gitflow_init.sh --devname <you>` at the project root |
 | `uncommitted changes` | commit them, or `git stash push -u -m "wip <branch>"` |
 | `dev/<you> is behind origin` / `has diverged` | `git checkout dev/<you> && git pull --ff-only`; if that fails, merge `origin/dev/<you>` by hand |
-| `you already have a stage-N branch` | finish it (`finish_stage.sh`) or delete it |
+| `you already have a stage-N branch` | finish it (`./finish_stage.sh`) or delete it |
 | `gh is not logged in` | `gh auth login` |
 | `cannot see <repo>` / `cannot push` | ask the tutor to invite you |
+| `... is inside the git repository ...` | the project folder must not sit inside another repository: make it somewhere else |
 | `... did not answer 200 within 60 s` | read the log lines printed above it (`docker compose logs web_server`) |

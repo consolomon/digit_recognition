@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Start a new project stage: branch stage-<N>/<dev>/<name> from your own dev/<dev>.
 #
-#   scripts/gitflow/new_stage.sh --number N --name NAME
-#   scripts/gitflow/new_stage.sh --help
+#   ./new_stage.sh --number N --name NAME
+#   ./new_stage.sh --help
 #
 #   --number N    stage number (whole number >= 1); becomes F in the G.F.P version
 #   --name NAME   short stage name, lowercase letters, digits and dashes
@@ -44,10 +44,10 @@ info "checks"
 git fetch -q origin
 git rev-parse -q --verify "refs/heads/$DEVB" >/dev/null \
   || git rev-parse -q --verify "refs/remotes/origin/$DEVB" >/dev/null \
-  || die "$DEVB does not exist — run scripts/gitflow/gitflow_init.sh first"
+  || die "$DEVB does not exist — run ./gitflow_init.sh first"
 EXISTING="$( { git branch --list "stage-$NUMBER/$DEV/*" --format='%(refname:short)'
                git branch -r --list "origin/stage-$NUMBER/$DEV/*" --format='%(refname:short)'; } | sort -u)"
-[ -z "$EXISTING" ] || die "you already have a stage-$NUMBER branch: $(echo "$EXISTING" | tr '\n' ' ')— finish it first (scripts/gitflow/finish_stage.sh)"
+[ -z "$EXISTING" ] || die "you already have a stage-$NUMBER branch: $(echo "$EXISTING" | tr '\n' ' ')— finish it first (./finish_stage.sh)"
 
 if ! tree_is_clean; then
   git status --short
@@ -77,4 +77,4 @@ if confirm "Push $STAGE to origin (visible to the team, backed up)?"; then
 else
   echo "not pushed — later: git push -u origin $STAGE"
 fi
-info "on $STAGE — build the stage, then scripts/gitflow/finish_stage.sh"
+info "on $STAGE — build the stage, then ./finish_stage.sh"

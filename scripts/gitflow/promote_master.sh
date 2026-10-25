@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Share your work: open (or update) a pull request dev/<dev> -> master.
 #
-#   scripts/gitflow/promote_master.sh
-#   scripts/gitflow/promote_master.sh --help
+#   ./promote_master.sh
+#   ./promote_master.sh --help
 #
 #   --help   show this help
 #

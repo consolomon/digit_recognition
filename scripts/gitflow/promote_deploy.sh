@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Put your dev/<dev> on the deploy branch (incoming dev wins).
 #
-#   scripts/gitflow/promote_deploy.sh
-#   scripts/gitflow/promote_deploy.sh --help
+#   ./promote_deploy.sh
+#   ./promote_deploy.sh --help
 #
 #   --help   show this help
 #
@@ -11,7 +11,7 @@
 #   1. checks: dev/<dev> pushed (offers the push when it is ahead of origin)
 #   2. worktree at origin/deploy; git merge -s ours dev/<dev> records the history,
 #      then the files are replaced by dev/<dev>'s tree, except
-#      - DEPLOY_OWNED paths (scripts/gitflow/gitflow.conf; prod docker-compose.yaml,
+#      - DEPLOY_OWNED paths (gitflow.conf; prod docker-compose.yaml,
 #        .gitignore): deploy keeps its own version
 #      - DEV_ONLY paths: removed (minus DEPLOY_KEEP)
 #      - DEPLOY_KEEP paths: 3-way merged (a conflict stops the script)
@@ -105,5 +105,5 @@ info "deploy is now $DEVB at $V — not released yet"
 cat <<'EOF'
 Release on the VPS (in the deploy checkout):
   git pull --ff-only origin deploy
-  scripts/gitflow/dr_rebuild.sh
+  ./dr_rebuild.sh
 EOF

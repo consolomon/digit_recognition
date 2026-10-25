@@ -1,16 +1,19 @@
-# Files the starter pack must contain (paths relative to scripts/gitflow/starter/).
-# scripts/gitflow/gitflow_master_init.sh refuses to run if one is missing.
-# Everything else in the pack is committed too; _deploy/ is the deploy-branch overlay.
+# Files the starter pack must contain (paths relative to starter/, the folder
+# next to gitflow_master_init.sh). The master init refuses to run if one is
+# missing. Everything in the pack except this file and _deploy/ lands at the
+# root of the new repository; _deploy/ is the deploy-branch overlay.
 docker-compose.yaml
 .gitignore
 VERSION
 nginx/default.conf
 app/Dockerfile
 app/requirements.txt
-# Stage material (copies of this project's app/ files): the recalibrated stage 1
-# neuron, the stage 2 JSON helpers (import .neuron — the learner writes
-# stage2/neuron.py) and the stage 2 training + validation dataset
-app/stage1/model1.py
-app/stage2/serialization_utils.py
+# Stage material: the recalibrated stage 1 weights, the stage 2 training +
+# validation dataset, the stage 3 EMNIST-MNIST train/test sets
+app/stage1/weights.txt
 app/stage2/dataset.json
+app/stage3/emnist-mnist-train-images-idx3-ubyte
+app/stage3/emnist-mnist-train-labels-idx1-ubyte
+app/stage3/emnist-mnist-test-images-idx3-ubyte
+app/stage3/emnist-mnist-test-labels-idx1-ubyte
 _deploy/docker-compose.yaml

@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Shared helpers for the scripts/gitflow/*.sh scripts. Sourced, never run:
+# Shared helpers for the gitflow *.sh scripts, which sit at the project root
+# of a course repository. Sourced, never run:
 #
 #   source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 #
 # Every script calls gf_root first, so all paths below are relative to the
-# project root (scripts/gitflow/gitflow.conf, VERSION, ...).
+# project root (gitflow.conf, VERSION, ...).
 
-GF_CONF="scripts/gitflow/gitflow.conf"
+GF_CONF="${GF_CONF:-gitflow.conf}"
 
 # ── output and prompts ───────────────────────────────────────────────────────
 die()  { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
@@ -53,7 +54,7 @@ current_branch() { git branch --show-current; }
 devname() {
   local n
   n="$(git config --get gitflow.devname || true)"
-  [ -n "$n" ] || die "no developer name in this clone — run scripts/gitflow/gitflow_init.sh --devname <name> first"
+  [ -n "$n" ] || die "no developer name in this clone — run ./gitflow_init.sh --devname <name> first"
   printf '%s\n' "$n"
 }
 

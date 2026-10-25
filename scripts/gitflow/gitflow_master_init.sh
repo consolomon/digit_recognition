@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 # Create the team's gitflow repository from the starter pack (tutor / team lead).
 #
-#   scripts/gitflow/gitflow_master_init.sh
-#   scripts/gitflow/gitflow_master_init.sh --help
+#   <kit>/gitflow_master_init.sh
+#   <kit>/gitflow_master_init.sh --help
 #
 #   --help   show this help
 #
-# Run it from the root of the folder that holds scripts/gitflow/ (this script,
-# the other gitflow scripts and the starter pack scripts/gitflow/starter/).
+# <kit> is the folder that holds this script, the other gitflow scripts,
+# README.md, gitflow.conf and the starter pack starter/ side by side: a plain
+# folder anywhere, or scripts/gitflow/ inside a project. Run it from any
+# directory (symlinks to the script work too).
 # Interactive dialog:
 #   1. tools: git, gh (logged in)
 #   2. GitHub owner (you or one of your organisations), repository name,
@@ -15,23 +17,30 @@
 #   3. local directory for the new repository (new or empty)
 #   4. values baked into the starter files: domain, certbot email, web host
 #      port, app port (__DOMAIN__, __CERTBOT_EMAIL__, __WEB_HOST_PORT__, __APP_PORT__)
-#   5. scripts/gitflow/gitflow.conf: APP_DIR, WEB_SERVICE, TEST_CMD,
+#   5. gitflow.conf: APP_DIR, WEB_SERVICE, TEST_CMD,
 #      IMAGE_TEST_CMD, REQUIRED_TOOLS
 #   6. GitHub logins to invite as collaborators (optional)
 # Then, after a summary and your confirmation:
-#   - checks every file in scripts/gitflow/starter/MANIFEST exists and the
-#     GitHub repository does NOT exist yet
-#   - master: starter pack (minus _deploy/ and MANIFEST) + the gitflow scripts
-#     and the developer guide (README.md) in scripts/gitflow/ + the generated gitflow.conf -> commit "<VERSION> init: starter pack"
+#   - checks the kit (scripts, README.md, gitflow.conf, every file in
+#     starter/MANIFEST) and that the GitHub repository does NOT exist yet
+#   - master, all at the repository root: the starter/ contents (minus
+#     _deploy/ and MANIFEST) + the gitflow scripts + README.md (the developer
+#     guide) + the generated gitflow.conf -> commit "<VERSION> init: starter pack"
 #   - deploy: master + the starter/_deploy/ overlay (prod docker-compose.yaml)
 #     -> commit "<VERSION+1 patch> init deploy branch: prod compose"
 #   - creates the GitHub repository, pushes master and deploy, allows merge
 #     commits only (PR title = merge commit title, keeps the G.F.P prefix),
 #     invites the collaborators, tries "require a pull request" on master
-# No dev branch is created — everyone, you included, runs scripts/gitflow/gitflow_init.sh.
+# No dev branch is created — everyone, you included, runs gitflow_init.sh.
 set -euo pipefail
-SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SELF_DIR/lib.sh"
+# The kit is the folder of the real script file (symlinks resolved)
+SRC="${BASH_SOURCE[0]}"
+while [ -L "$SRC" ]; do
+  D="$(cd -P "$(dirname "$SRC")" && pwd)"; SRC="$(readlink "$SRC")"; [[ "$SRC" == /* ]] || SRC="$D/$SRC"
+done
+KIT="$(cd -P "$(dirname "$SRC")" && pwd)"
+source "$KIT/lib.sh"
+GF_CONF="$KIT/gitflow.conf"
 
 case "${1:-}" in
   "") ;;
@@ -39,24 +48,28 @@ case "${1:-}" in
   *) gf_help >&2; exit 2 ;;
 esac
 
-# The pack root is the folder that holds scripts/gitflow/; every pack path below is relative to it.
-cd "$SELF_DIR/../.."
-PACK="scripts/gitflow/starter"
-# Copied into the new repository's scripts/gitflow/ (README.md = the developer guide)
+PACK="$KIT/starter"
+# Copied to the new repository's root (README.md = the developer guide)
 SCRIPTS=(lib.sh new_stage.sh finish_stage.sh promote_master.sh promote_deploy.sh
          sync_deploy_vps.sh dr_rebuild.sh gitflow_init.sh README.md)
+# The folder the kit belongs to: the project around scripts/gitflow/, or the kit itself
+case "$KIT" in */scripts/gitflow) KIT_HOME="$(cd "$KIT/../.." && pwd)" ;; *) KIT_HOME="$KIT" ;; esac
 
 info "1. tools"
 need_cmd git; need_cmd gh "https://cli.github.com"
 gh auth status >/dev/null 2>&1 || die "gh is not logged in — run: gh auth login"
-[ -f "$PACK/MANIFEST" ] || die "$PACK/MANIFEST not found — run this from the folder that holds scripts/gitflow/"
+echo "kit: $KIT"
+for s in "${SCRIPTS[@]}" gitflow.conf; do [ -f "$KIT/$s" ] || die "$KIT/$s not found — the kit is incomplete"; done
+[ -f "$PACK/MANIFEST" ] || die "$PACK/MANIFEST not found — the starter pack must sit next to this script"
 MISSING=""
 while IFS= read -r f; do
   f="${f%%#*}"; f="$(echo "$f" | xargs)"; [ -n "$f" ] || continue
   [ -f "$PACK/$f" ] || MISSING+="  $PACK/$f"$'\n'
 done < "$PACK/MANIFEST"
 [ -z "$MISSING" ] || { printf '%s' "$MISSING" >&2; die "the starter pack is incomplete (files listed in $PACK/MANIFEST)"; }
-for s in "${SCRIPTS[@]}"; do [ -f "scripts/gitflow/$s" ] || die "scripts/gitflow/$s not found"; done
+for s in "${SCRIPTS[@]}" gitflow.conf; do
+  [ ! -e "$PACK/$s" ] || die "$PACK/$s clashes with the kit's own $s at the repository root — rename or remove it"
+done
 PACK_V="$(tr -d '[:space:]' < "$PACK/VERSION")"
 [[ "$PACK_V" =~ $VERSION_RE ]] || die "$PACK/VERSION is not G.F.P (got '$PACK_V')"
 
@@ -79,8 +92,14 @@ GMAIL="$(ask "Your email for commits" "$(git config --global user.email || true)
 [ -n "$GNAME" ] && [ -n "$GMAIL" ] || die "name and email are required for commits"
 
 info "3. local directory"
-DEST="$(ask "Directory for the new repository" "$(cd .. && pwd)/$NAME")"
+DEST="$(ask "Directory for the new repository" "$(dirname "$KIT_HOME")/$NAME")"
+case "$DEST" in /*) ;; *) DEST="$(pwd)/$DEST" ;; esac
 if [ -e "$DEST" ] && [ -n "$(ls -A "$DEST" 2>/dev/null)" ]; then die "$DEST exists and is not empty"; fi
+case "$DEST/" in "$KIT/"*) die "$DEST is inside the kit — pick a folder outside $KIT" ;; esac
+P_DIR="$DEST"; while [ ! -d "$P_DIR" ]; do P_DIR="$(dirname "$P_DIR")"; done
+if OUTER="$(git -C "$P_DIR" rev-parse --show-toplevel 2>/dev/null)"; then
+  confirm "$DEST would sit inside the git repository $OUTER. Continue anyway?" || die "stopped — pick a folder outside $OUTER"
+fi
 
 info "4. values baked into the starter files"
 DOMAIN="$(ask "Production domain" "example.org")"
@@ -89,7 +108,7 @@ WEB_HOST_PORT="$(ask "Local host port of the web server" 8008)"
 APP_PORT="$(ask "Port the app listens on inside its container" 8008)"
 [[ "$WEB_HOST_PORT" =~ ^[0-9]+$ ]] && [[ "$APP_PORT" =~ ^[0-9]+$ ]] || die "ports must be numbers"
 
-info "5. scripts/gitflow/gitflow.conf"
+info "5. gitflow.conf"
 gf_load_conf
 APP_DIR="$(ask "Docker build context of the app (APP_DIR)" "$APP_DIR")"
 WEB_SERVICE="$(ask "Compose service of the app (WEB_SERVICE)" "$WEB_SERVICE")"
@@ -129,11 +148,12 @@ mkdir -p "$DEST"
 cp -a "$PACK/." "$DEST/"
 rm -rf "$DEST/_deploy" "$DEST/MANIFEST"
 bake "$DEST"
-mkdir -p "$DEST/scripts/gitflow"
-for s in "${SCRIPTS[@]}"; do cp "scripts/gitflow/$s" "$DEST/scripts/gitflow/$s"; done
-chmod +x "$DEST"/scripts/gitflow/*.sh; chmod -x "$DEST/scripts/gitflow/lib.sh"
+for s in "${SCRIPTS[@]}"; do
+  cp "$KIT/$s" "$DEST/$s"
+  case "$s" in lib.sh|*.md) chmod -x "$DEST/$s" ;; *.sh) chmod +x "$DEST/$s" ;; esac
+done
 {
-  sed -n '1,/^APP_DIR=/{/^APP_DIR=/d;p}' scripts/gitflow/gitflow.conf
+  sed -n '1,/^APP_DIR=/{/^APP_DIR=/d;p}' "$KIT/gitflow.conf"
   echo "APP_DIR=$(q "$APP_DIR")"
   echo "# Compose service of the app, and the port it listens on inside the container."
   echo "WEB_SERVICE=$(q "$WEB_SERVICE")"
@@ -146,8 +166,8 @@ chmod +x "$DEST"/scripts/gitflow/*.sh; chmod -x "$DEST/scripts/gitflow/lib.sh"
   echo "# Language toolchain gitflow_init.sh checks for (warnings only), space-separated."
   echo "REQUIRED_TOOLS=$(q "$REQUIRED_TOOLS")"
   echo
-  sed -n '/^# Branch path policy/,$p' scripts/gitflow/gitflow.conf
-} > "$DEST/scripts/gitflow/gitflow.conf"
+  sed -n '/^# Branch path policy/,$p' "$KIT/gitflow.conf"
+} > "$DEST/gitflow.conf"
 
 g() { git -C "$DEST" "$@"; }
 git init -q -b master "$DEST"
@@ -188,8 +208,9 @@ JSON
 
 info "done: https://github.com/$REPO"
 cat <<EOF
-Hand out scripts/gitflow/gitflow_init.sh to every developer (it is also in the repository$( [ "$VIS" = public ] && printf ':\n  curl -fsSLO https://raw.githubusercontent.com/%s/master/scripts/gitflow/gitflow_init.sh' "$REPO")).
-Each developer runs:  bash gitflow_init.sh --devname <nickname>   (repository: $REPO)
-Your own dev branch:  cd "$DEST" && scripts/gitflow/gitflow_init.sh --devname <your-nickname>
+Hand out gitflow_init.sh and README.md to every developer (both are at the repository root$( [ "$VIS" = public ] && printf ':\n  curl -fsSLO https://raw.githubusercontent.com/%s/master/gitflow_init.sh' "$REPO")).
+Each developer, in a new folder (empty, or holding just those files) that becomes the project root:
+  bash gitflow_init.sh --devname <nickname>      (repository: $REPO)
+Your own dev branch:  cd "$DEST" && ./gitflow_init.sh --devname <your-nickname>
 Invite more later:    gh api -X PUT repos/$REPO/collaborators/<login> -f permission=push
 EOF

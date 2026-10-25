@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # Finish the current stage: merge stage-<N>/<dev>/<name> into your dev/<dev>.
 #
-#   scripts/gitflow/finish_stage.sh
-#   scripts/gitflow/finish_stage.sh --help
+#   ./finish_stage.sh
+#   ./finish_stage.sh --help
 #
 #   --help   show this help
 #
 # Run it on the stage branch, with everything committed. Steps:
 #   1. checks: you are on one of YOUR stage-*/<dev>/* branches, the tree is clean
-#   2. test gate: TEST_CMD from scripts/gitflow/gitflow.conf (if set), then the
-#      question "manual test in local Docker passed?" (scripts/gitflow/dr_rebuild.sh)
+#   2. test gate: TEST_CMD from gitflow.conf (if set), then the
+#      question "manual test in local Docker passed?" (./dr_rebuild.sh)
 #   3. git checkout dev/<dev>, git pull --ff-only,
 #      git merge --no-ff --no-commit stage-<N>/<dev>/<name>
 #      - a VERSION conflict takes the higher value
@@ -45,7 +45,7 @@ if [ -n "$TEST_CMD" ]; then
 else
   echo "no automated tests configured (TEST_CMD in $GF_CONF)"
 fi
-confirm "Manual test of $STAGE in local Docker (scripts/gitflow/dr_rebuild.sh) passed?" \
+confirm "Manual test of $STAGE in local Docker (./dr_rebuild.sh) passed?" \
   || die "finish the manual test first"
 
 info "merge $STAGE -> $DEVB"
@@ -81,4 +81,4 @@ if confirm "Delete $STAGE locally and on origin?"; then
   git branch -D "$STAGE"
   if git rev-parse -q --verify "refs/remotes/origin/$STAGE" >/dev/null; then git push origin --delete "$STAGE"; fi
 fi
-info "on $DEVB — share it with scripts/gitflow/promote_master.sh, deploy it with scripts/gitflow/promote_deploy.sh"
+info "on $DEVB — share it with ./promote_master.sh, deploy it with ./promote_deploy.sh"

@@ -1,4 +1,4 @@
-# Production stack (deploy branch only — DEPLOY_OWNED in scripts/gitflow/gitflow.conf,
+# Production stack (deploy branch only — DEPLOY_OWNED in gitflow.conf,
 # so promotions never replace it). Domain and email were baked in by
 # gitflow_master_init.sh. The first certificate must exist before nginx can
 # start its 443 server: issue it once with certbot's standalone mode, e.g.

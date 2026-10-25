@@ -278,29 +278,38 @@ Claude Code, language-agnostic. It does **not** change this repository's own
 workflow (the slash commands and rules above). Owner decisions of
 2026-10-25 shaped it; they are recorded here.
 
-### The scripts
+### The kit and the course repo layout
 
-All paths are relative to the project root; every script `cd`s there first
-and prints its own help with `--help`.
+The **kit** is one folder holding `gitflow_master_init.sh`, the other
+scripts, `README.md`, `gitflow.conf` and the starter pack `starter/` side by
+side. In this project it is `scripts/gitflow/`; a copy of that folder works
+anywhere as a plain **flat kit** (e.g. the owner's
+`~/Documents/Code sandbox/Digit Recognition starter pack/`). The master init
+finds the kit next to its own real file (symlinks resolved), so it runs from
+any directory. Since 1.2.5 (owner, 2026-10-25) a **course repo is flat**:
+the scripts, `README.md` and `gitflow.conf` sit at its root next to the
+`starter/` contents — no `scripts/gitflow/` there, no `MANIFEST`, no
+`_deploy/` — and every command is `./<script>.sh`.
 
-| Script | Replaces | What it does |
+| Script (in the course repo root) | Replaces | What it does |
 |---|---|---|
-| `scripts/gitflow/gitflow_master_init.sh` | `GITFLOW_INIT.md` Steps 1–4 | Tutor: dialog → new local repo from the starter pack → `master` + `deploy` → `gh repo create`, push, merge-commit-only settings, collaborators, "require PR" on `master` (refused on free private repos — then by convention) |
-| `scripts/gitflow/gitflow_init.sh --devname NAME` | — | Every developer (tutor too): dialog (gh login, https/ssh, push access / invitation) → clone → `git config gitflow.devname NAME` → `dev/NAME` from `master` (or resume it) |
-| `scripts/gitflow/new_stage.sh --number N --name NAME` | `/new-feature` | `stage-N/<dev>/NAME` from `dev/<dev>`; first commit `G.N.0 start stage N: NAME` |
-| `scripts/gitflow/finish_stage.sh` | `/finish-feature` | `TEST_CMD` + manual-test question → merge into `dev/<dev>` (`VERSION` conflict → higher value, other conflict → abort, back on the stage branch) → push, delete the stage branch |
-| `scripts/gitflow/promote_master.sh` | `/promote-master` | Opens / updates the PR `dev/<dev>` → `master` (title `<VERSION> merge: dev/<dev> → master`); the tutor merges it in GitHub |
-| `scripts/gitflow/promote_deploy.sh` | `/promote-deploy` + `merge_to_deploy.sh` | Anyone: `deploy` becomes `dev/<dev>`'s tree (incoming dev wins), deploy-owned paths kept, `Promoted-From:` trailer; temp worktree |
-| `scripts/gitflow/sync_deploy_vps.sh --master \| --dev` | `/sync-deploy-vps` | VPS: hotfix capture → cherry-pick the hotfix commits onto `master` (via `hotfix/<V>` + PR) or onto the last promoter's `dev/<x>`; prints restart reminders |
-| `scripts/gitflow/dr_rebuild.sh [--no-cache] [--check-only]` | `scripts/dr_rebuild.sh` | Build → optional `IMAGE_TEST_CMD` in the new image → recreate → `curl` localhost (dev compose) or `https://<server_name>/` (prod compose) |
-| `scripts/gitflow/README.md` | — | The developer guide (developers only, not the tutor): join, stage cycle, version bumps, sharing, deploy, taking `master` in by hand, troubleshooting. Shipped into every course repo |
-| `scripts/gitflow/lib.sh`, `scripts/gitflow/gitflow.conf` | — | Shared helpers; per-repo settings (`APP_DIR`, `WEB_SERVICE`, `APP_PORT`, `TEST_CMD`, `IMAGE_TEST_CMD`, `REQUIRED_TOOLS`, `DEPLOY_OWNED` / `DEV_ONLY` / `DEPLOY_KEEP`) |
-| `scripts/gitflow/starter/` | — | The starter pack (`MANIFEST` = required files; `_deploy/` = deploy overlay). Seeded with this project's `docker-compose.yaml`, `.gitignore`, `VERSION`, `nginx/default.conf`, `app/Dockerfile`, `app/requirements.txt`; stage material (B-14): `app/stage1/model1.py` (recalibrated), `app/stage2/serialization_utils.py` (`jsonify` / `dejsonify`; imports `.neuron`, which the learner writes), `app/stage2/dataset.json` (training + validation). Copies of this project's `app/` files — re-copy after changing them; the owner extends it |
+| `gitflow_master_init.sh` (kit only) | `GITFLOW_INIT.md` Steps 1–4 | Tutor: checks the kit (every script, `README.md`, `gitflow.conf`, the `MANIFEST` files; a `starter/` file clashing with a kit file name is refused) → dialog → new local repo with the flat root → `master` + `deploy` → `gh repo create`, push, merge-commit-only settings, collaborators, "require PR" on `master` (refused on free private repos — then by convention). Default target: beside the kit's project (`scripts/gitflow/` kit) or beside the kit folder (flat kit); asks before nesting it in another repository |
+| `gitflow_init.sh --devname NAME` | — | Every developer (tutor too). The **current directory becomes the project root**: `git init` + fetch + checkout `master` over the files already placed there (identical ones are taken over; differing ones replaced after a yes, copies in `.git/gitflow-replaced/`; a no removes the new `.git` again; other files stay untracked). Refuses a folder inside another repository; inside an existing clone it sets that clone up. Then `git config gitflow.devname NAME` → `dev/NAME` from `master` (or resume it). Its body is one brace group, so the checkout may replace the running file |
+| `new_stage.sh --number N --name NAME` | `/new-feature` | `stage-N/<dev>/NAME` from `dev/<dev>`; first commit `G.N.0 start stage N: NAME` |
+| `finish_stage.sh` | `/finish-feature` | `TEST_CMD` + manual-test question → merge into `dev/<dev>` (`VERSION` conflict → higher value, other conflict → abort, back on the stage branch) → push, delete the stage branch |
+| `promote_master.sh` | `/promote-master` | Opens / updates the PR `dev/<dev>` → `master` (title `<VERSION> merge: dev/<dev> → master`); the tutor merges it in GitHub |
+| `promote_deploy.sh` | `/promote-deploy` + `merge_to_deploy.sh` | Anyone: `deploy` becomes `dev/<dev>`'s tree (incoming dev wins), deploy-owned paths kept, `Promoted-From:` trailer; temp worktree |
+| `sync_deploy_vps.sh --master \| --dev` | `/sync-deploy-vps` | VPS: hotfix capture → cherry-pick the hotfix commits onto `master` (via `hotfix/<V>` + PR) or onto the last promoter's `dev/<x>`; prints restart reminders |
+| `dr_rebuild.sh [--no-cache] [--check-only]` | `scripts/dr_rebuild.sh` | Build → optional `IMAGE_TEST_CMD` in the new image → recreate → `curl` localhost (dev compose) or `https://<server_name>/` (prod compose) |
+| `README.md` | — | The developer guide (developers only, not the tutor): join, stage cycle, version bumps, sharing, deploy, taking `master` in by hand, troubleshooting. The course repo's front page |
+| `lib.sh`, `gitflow.conf` | — | Shared helpers; per-repo settings (`APP_DIR`, `WEB_SERVICE`, `APP_PORT`, `TEST_CMD`, `IMAGE_TEST_CMD`, `REQUIRED_TOOLS`, `DEPLOY_OWNED` / `DEV_ONLY` / `DEPLOY_KEEP`). The kit's `gitflow.conf` is the template the master init fills in |
+| `starter/` (kit only) | — | The starter pack, copied to the course repo root (`MANIFEST` = required files, not copied; `_deploy/` = deploy overlay). Seeded with this project's `docker-compose.yaml`, `.gitignore`, `VERSION`, `nginx/default.conf`, `app/Dockerfile`, `app/requirements.txt`; stage material (owner, 6b0c443): `app/stage1/weights.txt` (the recalibrated weights and bias, B-14), `app/stage2/dataset.json` (training + validation, B-14), `app/stage3/emnist-mnist-*` (EMNIST-MNIST train/test, 53 MB per course repo). The owner extends it |
 
-Distribution: the tutor holds `scripts/gitflow/`; `gitflow_master_init.sh`
-commits the starter pack **and** the scripts plus `README.md` (minus
-itself and the pack) into the new repo, so developers get them with the clone. Only
-`gitflow_init.sh` (self-contained) is handed out before that.
+Distribution: the tutor holds the kit; `gitflow_master_init.sh` commits the
+starter contents, the scripts, `README.md` and the generated `gitflow.conf`
+(not itself, not `MANIFEST` / `_deploy/`) at the new repo's root. Each
+developer gets `gitflow_init.sh` and `README.md` beforehand, puts them in a
+new folder and runs `bash gitflow_init.sh --devname <nick>` there.
 
 ### Model
 
@@ -311,7 +320,7 @@ itself and the pack) into the new repo, so developers get them with the clone. O
 | Deploy | Anyone promotes their own `dev/<dev>`; **incoming dev wins** (`merge -s ours` for history + `read-tree` of dev's tree, then `DEPLOY_OWNED` restored, `DEV_ONLY` stripped, `DEPLOY_KEEP` 3-way merged with `git merge-file`). No conflicts by construction; re-promoting an already-merged branch works (plain commit) |
 | Versioning | `G.F.P` with **F = stage number**: `new_stage.sh` sets `G.N.0`, later commits bump P by hand; merges carry forward; `VERSION` conflicts take the higher value. New repo starts at `1.0.0`, `deploy` at `1.0.1` |
 | VPS back-port | **Cherry-pick, not merge** (decided 2026-10-25 while building): `deploy`'s history contains every developer who promoted, so merging it would drag their commits into `dev/<x>` / `master` (and conflict on `master`). The hotfix commits = `deploy`'s first-parent non-merge commits since its last `Promoted-From:` commit; already-applied ones are skipped. No promote-back / atomic push is needed: `promote_deploy.sh` restores the deploy-owned paths unconditionally, so there is no ancestry flip |
-| Part D | No restart prompts — `sync_deploy_vps.sh` prints the commands that apply and `scripts/gitflow/dr_rebuild.sh --check-only` |
+| Part D | No restart prompts — `sync_deploy_vps.sh` prints the commands that apply and `./dr_rebuild.sh --check-only` |
 | Starter config | Plain `nginx/default.conf` (no envsubst template), no `.env`: `__DOMAIN__`, `__CERTBOT_EMAIL__`, `__WEB_HOST_PORT__`, `__APP_PORT__` baked in by the dialog; no fixed `container_name` (compose prefixes the project) |
 | Language | Nothing Python-specific in the scripts: tests via `TEST_CMD` / `IMAGE_TEST_CMD`, tools via `REQUIRED_TOOLS`, required files via `MANIFEST` |
 | Optional helpers | none — no `commit.sh` / `sync_master.sh`; version bumps and pulling `master` into a dev branch stay manual |
@@ -338,6 +347,21 @@ run against a real local Docker stub stack (nginx-based app): build,
 in-image test, 200 check, image cleanup, `--check-only`, prod-compose
 failure path. `shellcheck` was not available (download blocked) — only
 `bash -n`.
+
+Flat layout (1.2.5): a new offline harness (same stand-ins) — **56 checks,
+all passing**: master init from a flat kit run from another directory
+(flat root: every script, `README.md`, generated `gitflow.conf`, starter
+contents incl. the stage 3 data; no `scripts/`, `MANIFEST`, `_deploy/`;
+baked placeholders; `master` 1.0.0 / `deploy` 1.0.1 pushed), from the
+nested kit through a symlink (default target beside the project), kit
+checks (missing `gitflow.conf`, a clashing `starter/README.md`); joins into
+the current directory (placed identical files, a differing README replaced
+with a backup, a declined replace leaving the folder untouched, a folder
+inside a foreign repository refused, in-place resume inside a clone); stage
+cycle, PR, promote, VPS hotfix back-port `--dev`; every `--help` shows the
+`./<script>.sh` form. It caught one bug: the in-place setup read the origin
+URL through `git remote get-url`, which applies `insteadOf` rewrites — it
+now reads `gitflow.repo` / the raw `remote.origin.url`.
 
 ---
 
