@@ -20,6 +20,7 @@
 #   5. gitflow.conf: APP_DIR, WEB_SERVICE, TEST_CMD,
 #      IMAGE_TEST_CMD, REQUIRED_TOOLS
 #   6. GitHub logins to invite as collaborators (optional)
+#
 # Then, after a summary and your confirmation:
 #   - checks the kit (scripts, README.md, gitflow.conf, every file in
 #     starter/MANIFEST) and that the GitHub repository does NOT exist yet
@@ -32,6 +33,9 @@
 #     commits only (PR title = merge commit title, keeps the G.F.P prefix),
 #     invites the collaborators, tries "require a pull request" on master
 # No dev branch is created — everyone, you included, runs gitflow_init.sh.
+#
+# Your own dev branch:  cd "/home/consolomon/Documents/Code sandbox/<repo_name>" && ./gitflow_init.sh --devname <your-nickname>
+# Invite more later:    gh api -X PUT repos/consolomon/<repo_name>/collaborators/<login> -f permission=push
 set -euo pipefail
 # The kit is the folder of the real script file (symlinks resolved)
 SRC="${BASH_SOURCE[0]}"
