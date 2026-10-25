@@ -85,7 +85,7 @@ if [ -n "$PROD" ]; then
   wait_for "https://$DOMAIN/" 200 30 && wait_for "http://$DOMAIN/" 301 10 \
     || { compose ps; compose logs --tail 30 >&2; die "end-to-end check failed"; }
 else
-  PORT="$(compose port "$WEB_SERVICE" "$APP_PORT" 2>/dev/null | sed 's/.*://')"
+  PORT="$(compose port "$WEB_SERVICE" "$APP_PORT" 2>/dev/null | sed 's/.*://' || true)"
   [ -n "$PORT" ] || die "$WEB_SERVICE publishes no host port for $APP_PORT — is it running?"
   wait_for "http://127.0.0.1:$PORT/" 200 60 \
     || { compose logs --tail 30 "$WEB_SERVICE" >&2; die "$WEB_SERVICE did not answer 200 within 60 s"; }

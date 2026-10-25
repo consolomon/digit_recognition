@@ -55,13 +55,19 @@ WEB_HOST_PORT=8009 scripts/dr_rebuild.sh # only if 8008 is ever taken
 Steps: build the new image (the old container keeps running) → import
 check + the smoke tests in throw-away containers of the new image
 (`tests/` mounted, `DR_APP_DIR=/app`) → recreate the container → wait for
-`/` to answer → print the last 10 log lines and the URL → remove the
-replaced image. A failing step stops the script before the running
-container is touched.
+`/` to answer inside the container → **end-to-end `curl` from the host**
+→ print the last 10 log lines and the URL → remove the replaced image. A
+failing step before the recreate stops the script with the running
+container untouched.
 
-Production is not affected: the `deploy` branch keeps its own compose
-(`DEPLOY_OWNED`). `scripts/` does reach `deploy` (since 2026-10-17), but
-`dr_rebuild.sh` drives the dev compose and is not used on the VPS.
+The end-to-end check (since 1.2.2, B-13) follows the compose file of the
+checked-out branch: with the dev compose (`master`/`dev`)
+`http://127.0.0.1:<WEB_HOST_PORT>/` must answer 200; with the prod compose
+(`deploy`, recognised by its `nginx` service) `https://$DOMAIN/` must
+answer 200 and `http://$DOMAIN/` 301, `DOMAIN` from `.env` — the request a
+user makes, through nginx. So on the VPS a release can be
+`git pull --ff-only origin deploy && scripts/dr_rebuild.sh` once the stack
+has been started the first time (`DEPLOY_INIT.md` §"Release").
 
 **Keep the feature branch checked out from step 1 to step 5** (`CLAUDE.md`
 §"Development cycle"): the owner reviews the changes in the IDE as they
@@ -263,6 +269,77 @@ a re-run converging to nothing.
 
 ---
 
+## Multi-developer gitflow scripts — `scripts/gitflow/` (B-13)
+
+An **AI-free** gitflow for a *new* learning repository, in which several
+developers rebuild this app from an empty directory up to stage 3,
+independently, sharing their results through `master`. Plain bash, no
+Claude Code, language-agnostic. It does **not** change this repository's own
+workflow (the slash commands and rules above). Owner decisions of
+2026-10-25 shaped it; they are recorded here.
+
+### The scripts
+
+All paths are relative to the project root; every script `cd`s there first
+and prints its own help with `--help`.
+
+| Script | Replaces | What it does |
+|---|---|---|
+| `scripts/gitflow/gitflow_master_init.sh` | `GITFLOW_INIT.md` Steps 1–4 | Tutor: dialog → new local repo from the starter pack → `master` + `deploy` → `gh repo create`, push, merge-commit-only settings, collaborators, "require PR" on `master` (refused on free private repos — then by convention) |
+| `scripts/gitflow/gitflow_init.sh --devname NAME` | — | Every developer (tutor too): dialog (gh login, https/ssh, push access / invitation) → clone → `git config gitflow.devname NAME` → `dev/NAME` from `master` (or resume it) |
+| `scripts/gitflow/new_stage.sh --number N --name NAME` | `/new-feature` | `stage-N/<dev>/NAME` from `dev/<dev>`; first commit `G.N.0 start stage N: NAME` |
+| `scripts/gitflow/finish_stage.sh` | `/finish-feature` | `TEST_CMD` + manual-test question → merge into `dev/<dev>` (`VERSION` conflict → higher value, other conflict → abort, back on the stage branch) → push, delete the stage branch |
+| `scripts/gitflow/promote_master.sh` | `/promote-master` | Opens / updates the PR `dev/<dev>` → `master` (title `<VERSION> merge: dev/<dev> → master`); the tutor merges it in GitHub |
+| `scripts/gitflow/promote_deploy.sh` | `/promote-deploy` + `merge_to_deploy.sh` | Anyone: `deploy` becomes `dev/<dev>`'s tree (incoming dev wins), deploy-owned paths kept, `Promoted-From:` trailer; temp worktree |
+| `scripts/gitflow/sync_deploy_vps.sh --master \| --dev` | `/sync-deploy-vps` | VPS: hotfix capture → cherry-pick the hotfix commits onto `master` (via `hotfix/<V>` + PR) or onto the last promoter's `dev/<x>`; prints restart reminders |
+| `scripts/gitflow/dr_rebuild.sh [--no-cache] [--check-only]` | `scripts/dr_rebuild.sh` | Build → optional `IMAGE_TEST_CMD` in the new image → recreate → `curl` localhost (dev compose) or `https://<server_name>/` (prod compose) |
+| `scripts/gitflow/lib.sh`, `scripts/gitflow/gitflow.conf` | — | Shared helpers; per-repo settings (`APP_DIR`, `WEB_SERVICE`, `APP_PORT`, `TEST_CMD`, `IMAGE_TEST_CMD`, `REQUIRED_TOOLS`, `DEPLOY_OWNED` / `DEV_ONLY` / `DEPLOY_KEEP`) |
+| `scripts/gitflow/starter/` | — | The starter pack (`MANIFEST` = required files; `_deploy/` = deploy overlay). Seeded with this project's `docker-compose.yaml`, `.gitignore`, `VERSION`, `nginx/default.conf`, `app/Dockerfile`, `app/requirements.txt`; the owner extends it |
+
+Distribution: the tutor holds `scripts/gitflow/`; `gitflow_master_init.sh`
+commits the starter pack **and** the scripts (minus itself and the pack)
+into the new repo, so developers get them with the clone. Only
+`gitflow_init.sh` (self-contained) is handed out before that.
+
+### Model
+
+| Topic | Decision (owner, 2026-10-25) |
+|---|---|
+| Branches | `master`, `deploy` shared; `dev/<dev>` per developer; `stage-<N>/<dev>/<name>` cut from its own `dev/<dev>`. Scripts that switch branches end on `dev/<dev>` |
+| Sharing | PR `dev/<dev>` → `master`, merged by the tutor. Developers' versions are independent; `master` is a controlled sharing display — PR conflicts are expected and not resolved by developers (the tutor reviews branches directly) |
+| Deploy | Anyone promotes their own `dev/<dev>`; **incoming dev wins** (`merge -s ours` for history + `read-tree` of dev's tree, then `DEPLOY_OWNED` restored, `DEV_ONLY` stripped, `DEPLOY_KEEP` 3-way merged with `git merge-file`). No conflicts by construction; re-promoting an already-merged branch works (plain commit) |
+| Versioning | `G.F.P` with **F = stage number**: `new_stage.sh` sets `G.N.0`, later commits bump P by hand; merges carry forward; `VERSION` conflicts take the higher value. New repo starts at `1.0.0`, `deploy` at `1.0.1` |
+| VPS back-port | **Cherry-pick, not merge** (decided 2026-10-25 while building): `deploy`'s history contains every developer who promoted, so merging it would drag their commits into `dev/<x>` / `master` (and conflict on `master`). The hotfix commits = `deploy`'s first-parent non-merge commits since its last `Promoted-From:` commit; already-applied ones are skipped. No promote-back / atomic push is needed: `promote_deploy.sh` restores the deploy-owned paths unconditionally, so there is no ancestry flip |
+| Part D | No restart prompts — `sync_deploy_vps.sh` prints the commands that apply and `scripts/gitflow/dr_rebuild.sh --check-only` |
+| Starter config | Plain `nginx/default.conf` (no envsubst template), no `.env`: `__DOMAIN__`, `__CERTBOT_EMAIL__`, `__WEB_HOST_PORT__`, `__APP_PORT__` baked in by the dialog; no fixed `container_name` (compose prefixes the project) |
+| Language | Nothing Python-specific in the scripts: tests via `TEST_CMD` / `IMAGE_TEST_CMD`, tools via `REQUIRED_TOOLS`, required files via `MANIFEST` |
+| Optional helpers | none — no `commit.sh` / `sync_master.sh`; version bumps and pulling `master` into a dev branch stay manual |
+
+Hard rules in every script: `set -euo pipefail`; never force-push, rebase
+or `reset --hard`; explicit `G.F.P` messages; no AI attribution; every push
+asks first; merges into shared branches run in temporary worktrees under
+`$TMPDIR` (the developer's checkout never switches mid-run, so the
+"script replaced mid-run" hazard of `merge_to_deploy.sh` does not apply).
+
+**Hazard (by design of "incoming dev wins"):** a VPS edit that is not
+captured by `sync_deploy_vps.sh` is overwritten by the next promotion.
+Capture it in the same sitting.
+
+### Verification (2026-10-25)
+
+Offline harness (bare repos as GitHub, `url.insteadOf`, a stub `gh`, tutor
++ alice + bob + a VPS checkout, a non-Python app): **57 checks, all
+passing** — init of `master`/`deploy` with baked placeholders, joins and
+resume, stage cycle with the test gate and conflict abort, PR create/update,
+three promotions without conflicts, hotfix `--dev` / `--master`, a
+back-port collision, re-runs converging. `scripts/gitflow/dr_rebuild.sh`
+run against a real local Docker stub stack (nginx-based app): build,
+in-image test, 200 check, image cleanup, `--check-only`, prod-compose
+failure path. `shellcheck` was not available (download blocked) — only
+`bash -n`.
+
+---
+
 ## Summary table
 
 | Action | Command |
@@ -275,7 +352,7 @@ a re-run converging to nothing.
 | Finish feature | `git checkout dev && git merge --no-ff --no-commit feature/name && git commit -m "$(cat VERSION) merge: finish feature/name" && git branch -d feature/name` |
 | Promote to master | `git checkout master && git merge --no-ff --no-commit dev && git commit -m "$(cat VERSION) merge: sync dev → master" && git push origin master` |
 | Promote to deploy | `cp scripts/merge_to_deploy.sh /tmp/ && bash /tmp/merge_to_deploy.sh` |
-| Release | on the VPS: `git pull --ff-only origin deploy && docker compose up -d --build` + end-to-end check |
+| Release | on the VPS: `git pull --ff-only origin deploy && scripts/dr_rebuild.sh` (rebuild + end-to-end check) |
 | VPS hotfix / sync | on the VPS, in Claude Code: `/sync-deploy-vps [subject]`; then `git pull` dev on the dev PC |
 
 ---
@@ -525,6 +602,8 @@ as a separate follow-up task, whenever any of the following happens:
   relevant command examples here;
 - `scripts/merge_to_deploy.sh` (its `DEPLOY_OWNED` / `DEV_ONLY` /
   `DEPLOY_KEEP` arrays are also read by `/sync-deploy-vps`),
+  any `scripts/gitflow/*.sh` script or `scripts/gitflow/starter/` (the
+  "Multi-developer gitflow scripts" section must match them),
   `.claude/commands/sync-deploy-vps.md`, `scripts/next_version.sh`,
   `scripts/dr_rebuild.sh`, or any `.claude/commands/*.md` gitflow script
   changes — this file's command examples must match what they actually do;
