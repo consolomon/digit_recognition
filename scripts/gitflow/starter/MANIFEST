@@ -1,0 +1,10 @@
+# Files the starter pack must contain (paths relative to scripts/gitflow/starter/).
+# scripts/gitflow/gitflow_master_init.sh refuses to run if one is missing.
+# Everything else in the pack is committed too; _deploy/ is the deploy-branch overlay.
+docker-compose.yaml
+.gitignore
+VERSION
+nginx/default.conf
+app/Dockerfile
+app/requirements.txt
+_deploy/docker-compose.yaml
