@@ -1,15 +1,33 @@
-#!/usr/bin/env bash
+:<<"::CMDLITERAL"
+@echo off
+setlocal
+rem Windows launcher: runs the bash part of this file with Git for Windows bash.exe
+set "GF_BASH="
+for /f "delims=" %%G in ('where git.exe 2^>nul') do if not defined GF_BASH if exist "%%~dpG..\bin\bash.exe" set "GF_BASH=%%~dpG..\bin\bash.exe"
+if not defined GF_BASH if exist "%ProgramFiles%\Git\bin\bash.exe" set "GF_BASH=%ProgramFiles%\Git\bin\bash.exe"
+if not defined GF_BASH if exist "%LocalAppData%\Programs\Git\bin\bash.exe" set "GF_BASH=%LocalAppData%\Programs\Git\bin\bash.exe"
+if not defined GF_BASH echo ERROR: Git for Windows is not installed - get it from https://git-scm.com/download/win 1>&2
+if not defined GF_BASH exit /b 1
+set "GF_SELF=%~f0"
+set "GF_SELF=%GF_SELF:\=/%"
+set "GF_IGNCR="
+"%GF_BASH%" -o igncr -c "exit 0" >nul 2>&1 && set "GF_IGNCR=-o igncr"
+"%GF_BASH%" %GF_IGNCR% "%GF_SELF%" %*
+set "GF_RC=%errorlevel%"
+echo %cmdcmdline% | find /i "%~nx0" >nul && pause
+exit /b %GF_RC%
+::CMDLITERAL
 # Finish the current stage: merge stage-<N>/<dev>/<name> into your dev/<dev>.
 #
-#   ./finish_stage.sh
-#   ./finish_stage.sh --help
+#   win\finish_stage.cmd
+#   win\finish_stage.cmd --help
 #
 #   --help   show this help
 #
 # Run it on the stage branch, with everything committed. Steps:
 #   1. checks: you are on one of YOUR stage-*/<dev>/* branches, the tree is clean
 #   2. test gate: TEST_CMD from gitflow.conf (if set), then the
-#      question "manual test in local Docker passed?" (./dr_rebuild.sh)
+#      question "manual test in local Docker passed?" (win\dr_rebuild.cmd)
 #   3. git checkout dev/<dev>, git pull --ff-only,
 #      git merge --no-ff --no-commit stage-<N>/<dev>/<name>
 #      - a VERSION conflict takes the higher value
@@ -19,7 +37,7 @@
 #   5. push dev/<dev>, delete the stage branch locally and on origin (asks first)
 # You end on dev/<dev>.
 set -euo pipefail
-source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/lib.cmd"
 
 case "${1:-}" in
   "") ;;
@@ -34,7 +52,8 @@ DEVB="dev/$DEV"
 STAGE="$(current_branch)"
 
 info "checks"
-[[ "$STAGE" =~ ^stage-[0-9]+/$DEV/[a-z0-9-]+$ ]] \
+RE_STAGE="^stage-[0-9]+/$DEV/[a-z0-9-]+\$"
+[[ "$STAGE" =~ $RE_STAGE ]] \
   || die "current branch '$STAGE' is not one of your stage branches (stage-<N>/$DEV/<name>)"
 require_clean_tree
 
@@ -45,7 +64,7 @@ if [ -n "$TEST_CMD" ]; then
 else
   echo "no automated tests configured (TEST_CMD in $GF_CONF)"
 fi
-confirm "Manual test of $STAGE in local Docker (./dr_rebuild.sh) passed?" \
+confirm "Manual test of $STAGE in local Docker (win\dr_rebuild.cmd) passed?" \
   || die "finish the manual test first"
 
 info "merge $STAGE -> $DEVB"
@@ -81,4 +100,4 @@ if confirm "Delete $STAGE locally and on origin?"; then
   git branch -D "$STAGE"
   if git rev-parse -q --verify "refs/remotes/origin/$STAGE" >/dev/null; then git push origin --delete "$STAGE"; fi
 fi
-info "on $DEVB — share it with ./promote_master.sh, deploy it with ./promote_deploy.sh"
+info "on $DEVB — share it with win\promote_master.cmd, deploy it with win\promote_deploy.cmd"

@@ -1,6 +1,6 @@
-# Files the starter pack must contain (paths relative to starter/, the folder
-# next to gitflow_master_init.sh). The master init refuses to run if one is
-# missing. Everything in the pack except this file and _deploy/ lands at the
+# Files the starter pack must contain (paths relative to starter/, inside the
+# kit next to linux/, macos/ and win/). The master init refuses to run if one
+# is missing. Everything in the pack except this file and _deploy/ lands at the
 # root of the new repository; _deploy/ is the deploy-branch overlay.
 docker-compose.yaml
 .gitignore

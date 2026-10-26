@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 # Start a new project stage: branch stage-<N>/<dev>/<name> from your own dev/<dev>.
 #
-#   ./new_stage.sh --number N --name NAME
-#   ./new_stage.sh --help
+#   macos/new_stage.tool --number N --name NAME
+#   macos/new_stage.tool --help
 #
 #   --number N    stage number (whole number >= 1); becomes F in the G.F.P version
 #   --name NAME   short stage name, lowercase letters, digits and dashes
 #                 (e.g. digit-recognition) -> branch stage-N/<dev>/NAME
 #   --help        show this help
+#   A missing --number / --name is asked for.
 #
 # Steps:
-#   1. checks: developer name set (gitflow_init.sh), arguments valid, the stage
+#   1. checks: developer name set (gitflow_init), arguments valid, the stage
 #      branch does not exist yet locally or on origin
 #   2. uncommitted work: offers to stash it as "wip <branch>", or stops
 #   3. git checkout dev/<dev>, git pull --ff-only, git checkout -b stage-N/<dev>/NAME
@@ -19,7 +20,7 @@
 # You stay on the stage branch. Every later commit there bumps P by hand:
 #   G.N.P -> G.N.(P+1) in VERSION, commit message "G.N.(P+1) <subject>".
 set -euo pipefail
-source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/lib.tool"
 
 NUMBER=""; NAME=""
 while [ $# -gt 0 ]; do
@@ -31,9 +32,11 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-[ -n "$NUMBER" ] && [ -n "$NAME" ] || { gf_help >&2; die "--number and --name are both required"; }
-[[ "$NUMBER" =~ ^[1-9][0-9]*$ ]] || die "--number must be a whole number >= 1 (got '$NUMBER')"
-[[ "$NAME" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]] || die "--name must be lowercase letters, digits and single dashes (got '$NAME')"
+[ -n "$NUMBER" ] || NUMBER="$(ask "Stage number (whole number >= 1)")"
+[ -n "$NAME" ] || NAME="$(ask "Stage name (lowercase letters, digits, dashes)")"
+RE_NUMBER='^[1-9][0-9]*$'; RE_NAME='^[a-z0-9]+(-[a-z0-9]+)*$'
+[[ "$NUMBER" =~ $RE_NUMBER ]] || die "--number must be a whole number >= 1 (got '$NUMBER')"
+[[ "$NAME" =~ $RE_NAME ]] || die "--name must be lowercase letters, digits and single dashes (got '$NAME')"
 
 gf_root
 DEV="$(devname)"
@@ -44,10 +47,10 @@ info "checks"
 git fetch -q origin
 git rev-parse -q --verify "refs/heads/$DEVB" >/dev/null \
   || git rev-parse -q --verify "refs/remotes/origin/$DEVB" >/dev/null \
-  || die "$DEVB does not exist — run ./gitflow_init.sh first"
+  || die "$DEVB does not exist — run macos/gitflow_init.tool first"
 EXISTING="$( { git branch --list "stage-$NUMBER/$DEV/*" --format='%(refname:short)'
                git branch -r --list "origin/stage-$NUMBER/$DEV/*" --format='%(refname:short)'; } | sort -u)"
-[ -z "$EXISTING" ] || die "you already have a stage-$NUMBER branch: $(echo "$EXISTING" | tr '\n' ' ')— finish it first (./finish_stage.sh)"
+[ -z "$EXISTING" ] || die "you already have a stage-$NUMBER branch: $(echo "$EXISTING" | tr '\n' ' ')— finish it first (macos/finish_stage.tool)"
 
 if ! tree_is_clean; then
   git status --short
@@ -77,4 +80,4 @@ if confirm "Push $STAGE to origin (visible to the team, backed up)?"; then
 else
   echo "not pushed — later: git push -u origin $STAGE"
 fi
-info "on $STAGE — build the stage, then ./finish_stage.sh"
+info "on $STAGE — build the stage, then macos/finish_stage.tool"

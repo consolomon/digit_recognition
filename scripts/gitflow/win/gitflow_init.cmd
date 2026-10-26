@@ -1,17 +1,39 @@
-#!/usr/bin/env bash
+:<<"::CMDLITERAL"
+@echo off
+setlocal
+rem Windows launcher: runs the bash part of this file with Git for Windows bash.exe
+set "GF_BASH="
+for /f "delims=" %%G in ('where git.exe 2^>nul') do if not defined GF_BASH if exist "%%~dpG..\bin\bash.exe" set "GF_BASH=%%~dpG..\bin\bash.exe"
+if not defined GF_BASH if exist "%ProgramFiles%\Git\bin\bash.exe" set "GF_BASH=%ProgramFiles%\Git\bin\bash.exe"
+if not defined GF_BASH if exist "%LocalAppData%\Programs\Git\bin\bash.exe" set "GF_BASH=%LocalAppData%\Programs\Git\bin\bash.exe"
+if not defined GF_BASH echo ERROR: Git for Windows is not installed - get it from https://git-scm.com/download/win 1>&2
+if not defined GF_BASH exit /b 1
+set "GF_SELF=%~f0"
+set "GF_SELF=%GF_SELF:\=/%"
+set "GF_IGNCR="
+"%GF_BASH%" -o igncr -c "exit 0" >nul 2>&1 && set "GF_IGNCR=-o igncr"
+"%GF_BASH%" %GF_IGNCR% "%GF_SELF%" %*
+set "GF_RC=%errorlevel%"
+echo %cmdcmdline% | find /i "%~nx0" >nul && pause
+exit /b %GF_RC%
+::CMDLITERAL
 # Join the team repository and set up your own dev/<devname> branch.
 #
-#   bash gitflow_init.sh --devname NAME
-#   bash gitflow_init.sh --help
+#   win\gitflow_init.cmd --devname NAME
+#   win\gitflow_init.cmd --help
 #
 #   --devname NAME   your developer nickname (lowercase letters, digits, - or _);
 #                    your branches become dev/NAME and stage-<N>/NAME/<stage-name>
+#                    (asked for when missing)
 #   --help           show this help
 #
-# Self-contained: the tutor hands this file (with README.md) out before you
-# have a clone. The CURRENT DIRECTORY becomes the project root: run it in a
-# new folder — empty, or holding the files the tutor handed out — or inside
-# an existing clone of the team repository to set that clone up.
+# Self-contained: the tutor hands out this script's folder (win\, with
+# README.md) before you have a clone. The PROJECT ROOT is the folder that
+# holds win\: make a new folder, put win\ in it and run
+# win\gitflow_init.cmd from there (a copy outside a linux/ macos/ win/ folder
+# uses the current directory). Run inside an existing clone, it sets that
+# clone up.
+#
 # Interactive dialog:
 #   1. tools: git, gh, curl (required); docker (warning only)
 #   2. GitHub login (gh auth login if needed) and protocol: https or ssh
@@ -19,7 +41,7 @@
 #      invitation, or tells you to ask the tutor)
 #   4. git identity for this clone
 # Then:
-#   5. clones master into the current directory. Files already here that the
+#   5. clones master into the project root. Files already there that the
 #      repository also has: identical ones are simply taken over; differing
 #      ones are replaced by the repository's version after you confirm (your
 #      copies are kept in .git/gitflow-replaced/). Other files stay untouched.
@@ -30,12 +52,15 @@
 # Never creates master or deploy and never changes your --global git config.
 set -euo pipefail
 
+# Git for Windows: its Unix tools first (no-op elsewhere)
+case "$(uname -s)" in MINGW*|MSYS*|CYGWIN*) PATH="/usr/bin:$PATH" ;; esac
+
 die()  { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
 warn() { printf 'WARNING: %s\n' "$*" >&2; }
 info() { printf '\n\033[1m── %s\033[0m\n' "$*"; }
-confirm() { local a=""; read -r -p "$1 [y/N] " a || true; [[ "$a" =~ ^[Yy]([Ee][Ss])?$ ]]; }
+confirm() { local a="" re='^[Yy]([Ee][Ss])?$'; read -r -p "$1 [y/N] " a || true; [[ "$a" =~ $re ]]; }
 ask() { local a=""; read -r -p "$1${2:+ [$2]}: " a || true; printf '%s\n' "${a:-${2:-}}"; }
-gf_help() { awk 'NR == 1 { next } /^#/ { sub(/^# ?/, ""); print; next } { exit }' "$0"; }
+gf_help() { awk '/^#!/ { next } /^#/ { s = 1; sub(/^# ?/, ""); print; next } s { exit }' "$0"; }
 
 # The rest is one brace group: bash reads it whole before running it, so the
 # checkout below may replace this very file without breaking the run.
@@ -49,13 +74,26 @@ while [ $# -gt 0 ]; do
     *) gf_help >&2; exit 2 ;;
   esac
 done
-[ -n "$DEVNAME" ] || { gf_help >&2; die "--devname is required"; }
-[[ "$DEVNAME" =~ ^[a-z0-9]+([-_][a-z0-9]+)*$ ]] || die "--devname must be lowercase letters, digits, - or _ (got '$DEVNAME')"
+[ -n "$DEVNAME" ] || DEVNAME="$(ask "Your developer nickname (lowercase letters, digits, - or _)")"
+RE_DEVNAME='^[a-z0-9]+([-_][a-z0-9]+)*$'; RE_REPO='^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$'
+[[ "$DEVNAME" =~ $RE_DEVNAME ]] || die "--devname must be lowercase letters, digits, - or _ (got '$DEVNAME')"
 DEVB="dev/$DEVNAME"
+
+# The project root: the folder holding this script's linux/ macos/ win/ folder,
+# else the current directory — never your home folder or /
+SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+case "$(basename "$SELF_DIR")" in
+  linux|macos|win) ROOT="$(dirname "$SELF_DIR")" ;;
+  *) ROOT="$(pwd)" ;;
+esac
+[ "$ROOT" != / ] && [ "$ROOT" != "$(cd ~ && pwd)" ] \
+  || die "the project root would be $ROOT — make a new folder for the project, put the win\ folder in it and run win\gitflow_init.cmd from there"
+cd "$ROOT"
+echo "project root: $ROOT"
 
 info "1. tools"
 for t in git gh curl; do command -v "$t" >/dev/null 2>&1 || die "'$t' is not installed"; done
-command -v docker >/dev/null 2>&1 || warn "docker is not installed — needed for the local stack (./dr_rebuild.sh)"
+command -v docker >/dev/null 2>&1 || warn "docker is not installed — needed for the local stack (win\dr_rebuild.cmd)"
 git --version
 
 info "2. GitHub"
@@ -75,12 +113,12 @@ esac
 # Inside an existing clone? Then set that one up instead of cloning again.
 # Inside any other repository: stop — the project must not nest in it.
 IN_PLACE=""
-if TOP="$(git rev-parse --show-toplevel 2>/dev/null)"; then
+if TOP="$(git -C "$ROOT" rev-parse --show-toplevel 2>/dev/null)"; then
   if git -C "$TOP" remote get-url origin >/dev/null 2>&1 \
      && confirm "You are inside a clone ($TOP, origin $(git -C "$TOP" remote get-url origin)). Set up this clone?"; then
     IN_PLACE=1
   else
-    die "$(pwd) is inside the git repository $TOP — run this in a folder outside it"
+    die "$ROOT is inside the git repository $TOP — make the project folder outside it"
   fi
 fi
 
@@ -92,7 +130,7 @@ if [ -n "$IN_PLACE" ]; then
 else
   info "3. repository"
   REPO="$(ask "Team repository (owner/name, from your tutor)")"
-  [[ "$REPO" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || die "expected owner/name, got '$REPO'"
+  [[ "$REPO" =~ $RE_REPO ]] || die "expected owner/name, got '$REPO'"
 fi
 gh repo view "$REPO" >/dev/null 2>&1 || {
   INV="$(gh api user/repository_invitations --jq ".[] | select(.repository.full_name == \"$REPO\") | .id" 2>/dev/null | head -n 1 || true)"
@@ -112,7 +150,7 @@ echo "push access to $REPO: ok"
 
 if [ -z "$IN_PLACE" ]; then
   info "4. git identity"
-  DIR="$(pwd)"
+  DIR="$ROOT"
   if [ "$PROTO" = ssh ]; then URL="git@github.com:$REPO.git"; else URL="https://github.com/$REPO.git"; fi
   NAME_DEF="$(git config --global user.name || true)"; MAIL_DEF="$(git config --global user.email || true)"
   GNAME="$(ask "Your name for commits" "$NAME_DEF")"; GMAIL="$(ask "Your email for commits" "$MAIL_DEF")"
@@ -170,9 +208,9 @@ else
 fi
 info "ready: $DIR on $DEVB"
 cat <<EOF
-Next (the developer guide is README.md):
+Next (the developer guide is win\README.md):
   cd "$DIR"
-  ./new_stage.sh --number 1 --name <stage-name>
+  win\new_stage.cmd --number 1 --name <stage-name>
 EOF
 exit 0
 }

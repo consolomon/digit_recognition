@@ -239,7 +239,7 @@ R-9 branch bootstrap (this file's Steps 1–4).
 ## Next
 
 A *new* multi-developer learning repository is bootstrapped by
-`scripts/gitflow/gitflow_master_init.sh` instead of these steps (B-13,
+`scripts/gitflow/<os>/gitflow_master_init` (`linux/…sh`, `macos/…tool`, `win/…cmd`) instead of these steps (B-13,
 `GITFLOW.md` §"Multi-developer gitflow scripts").
 
 Once Steps 0–5 are complete, all further gitflow usage — starting features,

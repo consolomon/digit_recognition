@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Put your dev/<dev> on the deploy branch (incoming dev wins).
 #
-#   ./promote_deploy.sh
-#   ./promote_deploy.sh --help
+#   macos/promote_deploy.tool
+#   macos/promote_deploy.tool --help
 #
 #   --help   show this help
 #
@@ -21,7 +21,7 @@
 #   4. pushes deploy (asks first)
 # This is NOT a release: the VPS pulls deploy and rebuilds by hand (printed at the end).
 set -euo pipefail
-source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/lib.tool"
 
 case "${1:-}" in
   "") ;;
@@ -54,17 +54,17 @@ w merge --no-ff --no-commit -s ours "$SRC" >/dev/null 2>&1 || true
 w read-tree -u --reset "$SRC"
 
 # Deploy-owned paths: deploy's own version, unconditionally
-for p in "${DEPLOY_OWNED[@]}"; do
+for p in ${DEPLOY_OWNED[@]+"${DEPLOY_OWNED[@]}"}; do
   w rm -r -q -f --ignore-unmatch -- "$p"
   if [ -n "$(git ls-tree -r --name-only "$DEP" -- "$p")" ]; then w checkout "$DEP" -- "$p"; fi
 done
-if printf '%s\n' "${DEPLOY_OWNED[@]}" | grep -qxF .gitignore; then
+if printf '%s\n' ${DEPLOY_OWNED[@]+"${DEPLOY_OWNED[@]}"} | grep -qxF .gitignore; then
   NEW_IGN="$(comm -13 <(git show "$DEP:.gitignore" 2>/dev/null | sort -u) <(git show "$SRC:.gitignore" 2>/dev/null | sort -u) | sed '/^[[:space:]]*$/d')"
   [ -z "$NEW_IGN" ] || { warn "$DEVB's .gitignore has lines deploy does not (deploy keeps its own):"; echo "$NEW_IGN" | sed 's/^/  /' >&2; }
 fi
 
 # Dev-only paths: out of deploy (DEPLOY_KEEP excluded)
-mapfile -t DEVONLY < <(devonly_pathspec)
+DEVONLY=(); while IFS= read -r l; do DEVONLY+=("$l"); done < <(devonly_pathspec)
 [ "${#DEVONLY[@]}" -eq 0 ] || w rm -r -q -f --ignore-unmatch -- "${DEVONLY[@]}"
 
 # DEPLOY_KEEP: 3-way merge per file, so edits made on deploy survive
@@ -102,8 +102,4 @@ confirm "Push deploy to origin?" || die "not pushed — nothing changed on origi
 w push origin HEAD:refs/heads/deploy || die "push rejected (someone pushed deploy meanwhile) — re-run the script"
 git fetch -q origin deploy
 info "deploy is now $DEVB at $V — not released yet"
-cat <<'EOF'
-Release on the VPS (in the deploy checkout):
-  git pull --ff-only origin deploy
-  ./dr_rebuild.sh
-EOF
+echo "Release on the VPS, in its deploy checkout: git pull --ff-only origin deploy && linux/dr_rebuild.sh"

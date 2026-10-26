@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Rebuild this branch's Docker stack and check it end to end with curl.
 #
-#   ./dr_rebuild.sh [--no-cache] [--check-only]
-#   ./dr_rebuild.sh --help
+#   macos/dr_rebuild.tool [--no-cache] [--check-only]
+#   macos/dr_rebuild.tool --help
 #
 #   --no-cache     build without the Docker layer cache
 #   --check-only   skip build and recreate; only run the end-to-end curl check
@@ -22,7 +22,7 @@
 #     curl https://<server_name>/ (expect 200) and http://<server_name>/ (expect 301),
 #     server_name read from nginx/default.conf
 set -euo pipefail
-source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/lib.tool"
 
 NO_CACHE=(); CHECK_ONLY=""
 for arg in "$@"; do
@@ -60,8 +60,8 @@ compose config --services | grep -qx nginx && PROD=1
 if [ -z "$CHECK_ONLY" ]; then
   OLD_IMAGE="$(compose images -q "$WEB_SERVICE" 2>/dev/null | head -n 1 || true)"
 
-  info "$WEB_SERVICE: build ${NO_CACHE[*]}"
-  compose build "${NO_CACHE[@]}" "$WEB_SERVICE"
+  info "$WEB_SERVICE: build ${NO_CACHE[*]:-}"
+  compose build ${NO_CACHE[@]+"${NO_CACHE[@]}"} "$WEB_SERVICE"
 
   if [ -n "$IMAGE_TEST_CMD" ]; then
     info "$WEB_SERVICE: tests in the new image"

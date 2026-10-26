@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 # On the VPS: capture a hotfix made on the deploy checkout and back-port it.
 #
-#   ./sync_deploy_vps.sh --master
-#   ./sync_deploy_vps.sh --dev
-#   ./sync_deploy_vps.sh --help
+#   linux/sync_deploy_vps.sh --master
+#   linux/sync_deploy_vps.sh --dev
+#   linux/sync_deploy_vps.sh --help
 #
 #   --master   back-port into master: branch hotfix/<VERSION> + pull request to master
 #              (no dev branch is touched)
 #   --dev      back-port into the dev/<dev> that deploy was last promoted from
 #              (its "Promoted-From:" trailer), pushed directly; then offers a PR to master
 #   --help     show this help
+#   Without --master / --dev it asks which one.
 #
 # Runs ONLY in the deploy checkout on the VPS. That checkout never changes
 # branch and never hosts a merge: it only commits the hotfix and fast-forwards.
@@ -34,7 +35,8 @@ for arg in "$@"; do
     *) gf_help >&2; exit 2 ;;
   esac
 done
-[ -n "$MODE" ] || { gf_help >&2; die "one of --master / --dev is required"; }
+[ -n "$MODE" ] || MODE="$(ask "Back-port the hotfix into: master or dev" dev)"
+case "$MODE" in master|dev) ;; *) die "answer master or dev (got '$MODE')" ;; esac
 
 gf_root
 gf_load_conf
@@ -111,7 +113,7 @@ while IFS= read -r sha; do
   if grep -q '^Promoted-From: ' <<< "$body"; then
     PROMOTED_FROM="$(sed -n 's/^Promoted-From: //p' <<< "$body" | head -n 1)"; break
   fi
-  if [ "$(git rev-list --parents -n 1 "$sha" | wc -w)" -eq 2 ]; then HOTFIXES=("$sha" "${HOTFIXES[@]}"); fi
+  if [ "$(( $(git rev-list --parents -n 1 "$sha" | wc -w) ))" -eq 2 ]; then HOTFIXES=("$sha" ${HOTFIXES[@]+"${HOTFIXES[@]}"}); fi
 done < <(git rev-list --first-parent HEAD)
 
 if [ "$MODE" = dev ]; then
@@ -136,8 +138,8 @@ else
   resolve_collisions() {
     local f st kind a tries files
     # list first: the prompts below must read the keyboard, not this list
-    mapfile -t files < <(w diff --name-only --diff-filter=U)
-    for f in "${files[@]}"; do
+    files=(); while IFS= read -r f; do files+=("$f"); done < <(w diff --name-only --diff-filter=U)
+    for f in ${files[@]+"${files[@]}"}; do
       [ -n "$f" ] || continue
       st="$(w ls-files -u -- "$f" | awk '{print $3}' | sort -u | tr -d '\n')"
       case "$st" in 123) kind="changed on both";; 13) kind="deleted on $LABEL, changed by the hotfix";;
@@ -159,13 +161,13 @@ else
     done
   }
 
-  mapfile -t DEVONLY < <(devonly_pathspec)
+  DEVONLY=(); while IFS= read -r l; do DEVONLY+=("$l"); done < <(devonly_pathspec)
   APPLIED=()
   for h in "${HOTFIXES[@]}"; do
     before="$(w write-tree)"
     w -c merge.conflictStyle=diff3 cherry-pick --no-commit "$h" >/dev/null 2>&1 || true
     # the target keeps its own deploy-owned (+ .gitignore) and dev-only paths
-    for p in "${DEPLOY_OWNED[@]}" .gitignore; do
+    for p in ${DEPLOY_OWNED[@]+"${DEPLOY_OWNED[@]}"} .gitignore; do
       w rm -r -q -f --ignore-unmatch -- "$p"
       if [ -n "$(git ls-tree -r --name-only "$TARGET" -- "$p")" ]; then w checkout "$TARGET" -- "$p"; fi
     done
@@ -211,7 +213,7 @@ else
     if [ -n "$PR_HEAD" ]; then
       if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
         gh pr create --base master --head "$PR_HEAD" --title "$V merge: $PR_HEAD → master" \
-          --body "VPS hotfix back-port by ./sync_deploy_vps.sh --$MODE." || warn "gh pr create failed — open it by hand"
+          --body "VPS hotfix back-port by linux/sync_deploy_vps.sh --$MODE." || warn "gh pr create failed — open it by hand"
       else
         echo "gh not available — open the pull request in the browser: $REPO_URL/compare/master...$PR_HEAD"
       fi
@@ -226,6 +228,6 @@ any=""
 if grep -q "^$APP_DIR/" <<< "$CH"; then echo "  $APP_DIR/ changed:                docker compose up -d --build $WEB_SERVICE"; any=1; fi
 if grep -q '^nginx/' <<< "$CH"; then echo "  nginx/ changed:                docker compose up -d --force-recreate nginx"; any=1; fi
 if grep -qx 'docker-compose.yaml' <<< "$CH"; then echo "  docker-compose.yaml changed:   docker compose up -d --build"; any=1; fi
-if [ -n "$any" ]; then echo "  then verify end to end:        ./dr_rebuild.sh --check-only"; else echo "  nothing to restart"; fi
+if [ -n "$any" ]; then echo "  then verify end to end:        linux/dr_rebuild.sh --check-only"; else echo "  nothing to restart"; fi
 echo
 echo "master is only changed through pull requests; tell the team if a dev branch moved."

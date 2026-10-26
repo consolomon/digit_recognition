@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Share your work: open (or update) a pull request dev/<dev> -> master.
 #
-#   ./promote_master.sh
-#   ./promote_master.sh --help
+#   linux/promote_master.sh
+#   linux/promote_master.sh --help
 #
 #   --help   show this help
 #
