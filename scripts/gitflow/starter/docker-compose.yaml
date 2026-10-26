@@ -1,0 +1,10 @@
+# Local development stack (master, dev/*, stage-* branches). The deploy branch
+# has its own production version (web_server + nginx + certbot) from the
+# starter pack's _deploy/ overlay. Ports were baked in by gitflow_master_init.sh.
+services:
+
+  web_server:
+    build: ./app
+    restart: unless-stopped
+    ports:
+      - "__WEB_HOST_PORT__:__APP_PORT__"
