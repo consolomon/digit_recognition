@@ -44,8 +44,7 @@ Found while reading the code for the workflow upgrade (2026-10-17).
 
 | Item | Branch | Started |
 |---|---|---|
-| B-13 multi-developer gitflow scripts | `feature/multidev-gitflow` | 2026-10-25 |
-| B-14 starter-pack stage material (folded into B-13) | `feature/multidev-gitflow` | 2026-10-25 |
+| — | | |
 
 ## Done
 
@@ -56,3 +55,5 @@ Found while reading the code for the workflow upgrade (2026-10-17).
 | Production = dedicated VPS; `/sync-deploy-vps` adopted from Sreda-obitaniya; `.claude/` + `scripts/` on deploy; `DEPLOY_KEEP` 3-way merge; nginx variable upstream (folded into the bootstrap) | 1.0.3 | 2026-10-17 |
 | Tracked `.claude/settings.json` (attribution off); DNS recorded; first push of `master`/`dev`/`deploy` | 1.0.4 | 2026-10-17 |
 | B-10 Page visual redesign — "Signal on Black" design system (`DESIGN_SYSTEM.md`, ARCH-4): poster reference dataset, black field + network background, single `#38bdf8` accent, `base.html` shell with fixed frame and hidden-scrollbar scroll window, partners footer; mirrors on claude.ai, Figma, Miro | 1.1.11 | 2026-10-17 |
+| B-13 AI-free multi-developer gitflow kit (`scripts/gitflow/`, `GITFLOW.md` §"Multi-developer gitflow scripts"): per-OS scripts `linux/*.sh`, `macos/*.tool`, `win/*.cmd` generated from `linux/` by `make_variants.sh`, each with its guide; master init → course repos with `/linux` `/macos` `/win`; starter pack; `scripts/dr_rebuild.sh` end-to-end curl check. Offline harness 58 × 3, real GitHub smoke 11 × 3. **Open follow-up:** a native run on macOS and on Windows (the cmd launcher could not be tested here) | 1.2.7 | 2026-10-26 |
+| B-14 Starter-pack stage material (folded into B-13): recalibrated stage 1 weights (ARCH-5), stage 2 training + validation `dataset.json`, `SerializationUtils.jsonify` / `dejsonify`, `tests/test_models.py` | 1.2.7 | 2026-10-26 |
