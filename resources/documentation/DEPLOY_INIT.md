@@ -161,12 +161,16 @@ of the feature cycle):
 ```bash
 cd /path/to/digit_recognition
 git pull --ff-only origin deploy
-docker compose up -d --build
-docker compose ps
-curl -s -o /dev/null -w "https: %{http_code}\n" https://sandbox.prosvet.io/   # expect 200
+scripts/dr_rebuild.sh
 ```
 
-If `nginx/` or `.env` changed in the release, also
+`scripts/dr_rebuild.sh` recognises the prod compose (its `nginx` service):
+it builds `web_server`, runs the smoke tests in the new image, recreates
+`web_server`, then checks end to end through nginx —
+`https://$DOMAIN/` 200 and `http://$DOMAIN/` 301 (`DOMAIN` from `.env`).
+It needs `python3` and `curl` on the VPS host. The very first start is
+still `docker compose up -d --build` (Step 4) — the script recreates only
+`web_server`. If `nginx/` or `.env` changed in the release, also
 `docker compose up -d --force-recreate nginx`.
 
 ## Hotfix on the VPS — `/sync-deploy-vps`
