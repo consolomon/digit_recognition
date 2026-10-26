@@ -1,0 +1,19 @@
+# Files the starter pack must contain (paths relative to starter/, inside the
+# kit next to linux/, macos/ and win/). The master init refuses to run if one
+# is missing. Everything in the pack except this file and _deploy/ lands at the
+# root of the new repository; _deploy/ is the deploy-branch overlay.
+docker-compose.yaml
+.gitignore
+VERSION
+nginx/default.conf
+app/Dockerfile
+app/requirements.txt
+# Stage material: the recalibrated stage 1 weights, the stage 2 training +
+# validation dataset, the stage 3 EMNIST-MNIST train/test sets
+app/stage1/weights.txt
+app/stage2/dataset.json
+app/stage3/emnist-mnist-train-images-idx3-ubyte
+app/stage3/emnist-mnist-train-labels-idx1-ubyte
+app/stage3/emnist-mnist-test-images-idx3-ubyte
+app/stage3/emnist-mnist-test-labels-idx1-ubyte
+_deploy/docker-compose.yaml

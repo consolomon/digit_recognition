@@ -35,7 +35,7 @@ then deleted.
 | `nginx/certbot/` (certificates, ACME webroot) | ✗ | ✗ | ✗ (created on the VPS, git-ignored everywhere) |
 | `.env` (committed — no secrets, owner 2026-10-17), `CLAUDE.md`, `VERSION` | ✓ | ✓ | ✓ |
 | `tests/` | ✓ | ✓ | ✓ (harmless there — outside the `./app` build context) |
-| `scripts/` | ✓ | ✓ | ✓ (since 2026-10-17 — `/sync-deploy-vps` reads `merge_to_deploy.sh`) |
+| `scripts/` (incl. `scripts/gitflow/` — the multi-developer scripts + starter pack for a new learning repo, `GITFLOW.md` §"Multi-developer gitflow scripts") | ✓ | ✓ | ✓ (since 2026-10-17 — `/sync-deploy-vps` reads `merge_to_deploy.sh`) |
 | `.claude/` (`commands/`, `settings.json`) | ✓ | ✓ | ✓ (since 2026-10-17 — the VPS runs `/sync-deploy-vps`; `settings.json` keeps attribution off there too) |
 | `resources/` (incl. `documentation/`) | ✓ (full) | ✓ (full) | `DEPLOY_KEEP` paths only — see `GITFLOW.md` §DEPLOY_KEEP |
 | `.idea`, `venv`, `.mcp.json`, `__pycache__` | ✗ | ✗ | ✗ |
@@ -237,6 +237,10 @@ production compose + nginx template + `DEPLOY_INIT.md`, R-8 smoke tests,
 R-9 branch bootstrap (this file's Steps 1–4).
 
 ## Next
+
+A *new* multi-developer learning repository is bootstrapped by
+`scripts/gitflow/<os>/gitflow_master_init` (`linux/…sh`, `macos/…tool`, `win/…cmd`) instead of these steps (B-13,
+`GITFLOW.md` §"Multi-developer gitflow scripts").
 
 Once Steps 0–5 are complete, all further gitflow usage — starting features,
 promoting to master/deploy — is documented in `GITFLOW.md`; the VPS side in

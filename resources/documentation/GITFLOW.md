@@ -55,13 +55,19 @@ WEB_HOST_PORT=8009 scripts/dr_rebuild.sh # only if 8008 is ever taken
 Steps: build the new image (the old container keeps running) → import
 check + the smoke tests in throw-away containers of the new image
 (`tests/` mounted, `DR_APP_DIR=/app`) → recreate the container → wait for
-`/` to answer → print the last 10 log lines and the URL → remove the
-replaced image. A failing step stops the script before the running
-container is touched.
+`/` to answer inside the container → **end-to-end `curl` from the host**
+→ print the last 10 log lines and the URL → remove the replaced image. A
+failing step before the recreate stops the script with the running
+container untouched.
 
-Production is not affected: the `deploy` branch keeps its own compose
-(`DEPLOY_OWNED`). `scripts/` does reach `deploy` (since 2026-10-17), but
-`dr_rebuild.sh` drives the dev compose and is not used on the VPS.
+The end-to-end check (since 1.2.2, B-13) follows the compose file of the
+checked-out branch: with the dev compose (`master`/`dev`)
+`http://127.0.0.1:<WEB_HOST_PORT>/` must answer 200; with the prod compose
+(`deploy`, recognised by its `nginx` service) `https://$DOMAIN/` must
+answer 200 and `http://$DOMAIN/` 301, `DOMAIN` from `.env` — the request a
+user makes, through nginx. So on the VPS a release can be
+`git pull --ff-only origin deploy && scripts/dr_rebuild.sh` once the stack
+has been started the first time (`DEPLOY_INIT.md` §"Release").
 
 **Keep the feature branch checked out from step 1 to step 5** (`CLAUDE.md`
 §"Development cycle"): the owner reviews the changes in the IDE as they
@@ -263,6 +269,141 @@ a re-run converging to nothing.
 
 ---
 
+## Multi-developer gitflow scripts — `scripts/gitflow/` (B-13)
+
+An **AI-free** gitflow for a *new* learning repository, in which several
+developers rebuild this app from an empty directory up to stage 3,
+independently, sharing their results through `master`. Plain bash, no
+Claude Code, language-agnostic. It does **not** change this repository's own
+workflow (the slash commands and rules above). Owner decisions of
+2026-10-25 shaped it; they are recorded here.
+
+### The kit and the course repo layout (per OS since 1.2.7)
+
+The **kit** is one folder: `linux/` (`*.sh`), `macos/` (`*.tool`) and
+`win/` (`*.cmd`) — the same nine scripts per OS, each folder with its own
+`README.md` — plus `README.md` (the course repo's front-page index),
+`gitflow.conf` (the settings template), `starter/` and `make_variants.sh`.
+In this project it is `scripts/gitflow/`; a copy of that folder works
+anywhere as a plain kit (e.g. the owner's
+`~/Documents/Code sandbox/Digit Recognition starter pack/`). Each OS folder
+has its own `gitflow_master_init`; it finds the kit above its own real file
+(symlinks resolved), so it runs from any directory.
+
+**A course repo** (owner, 2026-10-26) has the `starter/` contents at its
+root (no `MANIFEST`, no `_deploy/`), `README.md`, the generated
+`gitflow.conf`, a `.gitattributes` keeping the scripts LF, and the folders
+`linux/`, `macos/`, `win/` — every script except the master init, plus the
+OS guide. Commands are `linux/<script>.sh`, `macos/<script>.tool`,
+`win\<script>.cmd`. Every script finds the project from its own folder
+(`git -C <its folder> rev-parse --show-toplevel`), so it works from any
+directory and on a double-click, and asks for a missing argument.
+
+**One source, three copies.** `linux/*.sh` is the only code to edit;
+`scripts/gitflow/make_variants.sh` regenerates `macos/` and `win/` from it
+(kit tooling, not shipped). It rewrites own-folder mentions (`linux/x.sh` →
+`macos/x.tool` / `win\x.cmd`, bare `linux/`, `x.sh`), leaves the
+three-folder lists and the lines naming the VPS (always Linux) alone, and
+gives each `.cmd` a launcher header. The READMEs are written by hand. So the
+code is written for the lowest common denominator:
+
+| OS | How it runs | Constraints on the shared code |
+|---|---|---|
+| Linux | `#!/usr/bin/env bash`, GNU tools | — |
+| macOS | the stock `/bin/bash` **3.2** and BSD tools; `.tool` files open in Terminal on a double-click | no `mapfile`; possibly-empty arrays expanded as `${a[@]+"${a[@]}"}` (3.2 + `set -u`); regexes in variables; no `sed -i`, `readlink -f`, `git init -b`, `git branch --show-current` |
+| Windows | each `.cmd` is a cmd/bash polyglot: its first block (a bash `:` here-doc that cmd sees as a label) finds Git for Windows' `bin\bash.exe` via `where git.exe` / `%ProgramFiles%` / `%LocalAppData%`, runs the same file with it (`-o igncr` when supported, path with `/`), pauses on a double-click, exits with bash's code; bash skips that block | LF line endings (`.gitattributes` `eol=lf`); `PATH="/usr/bin:$PATH"` on MINGW/MSYS; `C:\x` paths accepted by the master init |
+
+| Script | Replaces | What it does |
+|---|---|---|
+| `<os>/gitflow_master_init` (kit only) | `GITFLOW_INIT.md` Steps 1–4 | Tutor: checks the kit (all three OS folders complete, `README.md`, `gitflow.conf`, the `MANIFEST` files; a `starter/` entry named `linux`, `macos`, `win`, `README.md` or `gitflow.conf` is refused) → dialog → new local repo with the layout above → `master` + `deploy` → `gh repo create`, push, merge-commit-only settings, collaborators, "require PR" on `master` (refused on free private repos — then by convention). Default target: beside the kit's project (`scripts/gitflow/` kit) or beside the kit folder; asks before nesting it in another repository |
+| `<os>/gitflow_init --devname NAME` | — | Every developer (tutor too). **The project root is the folder that holds the script's OS folder** (a loose copy uses the current directory; the home folder and `/` are refused): `git init` + fetch + checkout `master` over the files already there (identical ones taken over; differing ones replaced after a yes, copies in `.git/gitflow-replaced/`; a no removes the new `.git`; other files stay untracked). Refuses a root inside another repository; inside an existing clone it sets that clone up. Then `git config gitflow.devname NAME` → `dev/NAME` from `master` (or resume it). One brace group, so the checkout may replace the running file |
+| `<os>/new_stage --number N --name NAME` | `/new-feature` | `stage-N/<dev>/NAME` from `dev/<dev>`; first commit `G.N.0 start stage N: NAME` |
+| `<os>/finish_stage` | `/finish-feature` | `TEST_CMD` + manual-test question → merge into `dev/<dev>` (`VERSION` conflict → higher value, other conflict → abort, back on the stage branch) → push, delete the stage branch |
+| `<os>/promote_master` | `/promote-master` | Opens / updates the PR `dev/<dev>` → `master` (title `<VERSION> merge: dev/<dev> → master`); the tutor merges it in GitHub |
+| `<os>/promote_deploy` | `/promote-deploy` + `merge_to_deploy.sh` | Anyone: `deploy` becomes `dev/<dev>`'s tree (incoming dev wins), deploy-owned paths kept, `Promoted-From:` trailer; temp worktree |
+| `<os>/sync_deploy_vps --master \| --dev` | `/sync-deploy-vps` | VPS (Linux, `linux/` copy): hotfix capture → cherry-pick onto `master` (via `hotfix/<V>` + PR) or onto the last promoter's `dev/<x>`; prints restart reminders |
+| `<os>/dr_rebuild [--no-cache] [--check-only]` | `scripts/dr_rebuild.sh` | Build → optional `IMAGE_TEST_CMD` in the new image → recreate → `curl` localhost (dev compose) or `https://<server_name>/` (prod compose) |
+| `<os>/README.md`, `README.md` | — | The developer guide per OS (join, stage cycle, version bumps — PowerShell snippets on Windows —, sharing, deploy, taking `master` in, troubleshooting); the root index points to the three |
+| `<os>/lib`, `gitflow.conf` | — | Shared helpers; per-repo settings (`APP_DIR`, `WEB_SERVICE`, `APP_PORT`, `TEST_CMD`, `IMAGE_TEST_CMD`, `REQUIRED_TOOLS`, `DEPLOY_OWNED` / `DEV_ONLY` / `DEPLOY_KEEP`), one file for all three OSes |
+| `starter/` (kit only) | — | The starter pack, copied to the course repo root (`MANIFEST` = required files, not copied; `_deploy/` = deploy overlay). Seeded with this project's `docker-compose.yaml`, `.gitignore`, `VERSION`, `nginx/default.conf`, `app/Dockerfile`, `app/requirements.txt`; stage material (owner, 6b0c443): `app/stage1/weights.txt` (B-14), `app/stage2/dataset.json` (B-14), `app/stage3/emnist-mnist-*` (53 MB per course repo). The owner extends it |
+
+Distribution: the tutor holds the kit and runs the master init of their
+OS. Each developer gets the OS folder (`linux/`, `macos/` or `win/`) from
+the repo, puts it in a new project folder and runs its `gitflow_init`
+there.
+
+### Model
+
+| Topic | Decision (owner, 2026-10-25) |
+|---|---|
+| Branches | `master`, `deploy` shared; `dev/<dev>` per developer; `stage-<N>/<dev>/<name>` cut from its own `dev/<dev>`. Scripts that switch branches end on `dev/<dev>` |
+| Sharing | PR `dev/<dev>` → `master`, merged by the tutor. Developers' versions are independent; `master` is a controlled sharing display — PR conflicts are expected and not resolved by developers (the tutor reviews branches directly) |
+| Deploy | Anyone promotes their own `dev/<dev>`; **incoming dev wins** (`merge -s ours` for history + `read-tree` of dev's tree, then `DEPLOY_OWNED` restored, `DEV_ONLY` stripped, `DEPLOY_KEEP` 3-way merged with `git merge-file`). No conflicts by construction; re-promoting an already-merged branch works (plain commit) |
+| Versioning | `G.F.P` with **F = stage number**: `new_stage.sh` sets `G.N.0`, later commits bump P by hand; merges carry forward; `VERSION` conflicts take the higher value. New repo starts at `1.0.0`, `deploy` at `1.0.1` |
+| VPS back-port | **Cherry-pick, not merge** (decided 2026-10-25 while building): `deploy`'s history contains every developer who promoted, so merging it would drag their commits into `dev/<x>` / `master` (and conflict on `master`). The hotfix commits = `deploy`'s first-parent non-merge commits since its last `Promoted-From:` commit; already-applied ones are skipped. No promote-back / atomic push is needed: `promote_deploy.sh` restores the deploy-owned paths unconditionally, so there is no ancestry flip |
+| Part D | No restart prompts — `sync_deploy_vps.sh` prints the commands that apply and `./dr_rebuild.sh --check-only` |
+| Starter config | Plain `nginx/default.conf` (no envsubst template), no `.env`: `__DOMAIN__`, `__CERTBOT_EMAIL__`, `__WEB_HOST_PORT__`, `__APP_PORT__` baked in by the dialog; no fixed `container_name` (compose prefixes the project) |
+| Language | Nothing Python-specific in the scripts: tests via `TEST_CMD` / `IMAGE_TEST_CMD`, tools via `REQUIRED_TOOLS`, required files via `MANIFEST` |
+| Optional helpers | none — no `commit.sh` / `sync_master.sh`; version bumps and pulling `master` into a dev branch stay manual |
+
+Hard rules in every script: `set -euo pipefail`; never force-push, rebase
+or `reset --hard`; explicit `G.F.P` messages; no AI attribution; every push
+asks first; merges into shared branches run in temporary worktrees under
+`$TMPDIR` (the developer's checkout never switches mid-run, so the
+"script replaced mid-run" hazard of `merge_to_deploy.sh` does not apply).
+
+**Hazard (by design of "incoming dev wins"):** a VPS edit that is not
+captured by `sync_deploy_vps.sh` is overwritten by the next promotion.
+Capture it in the same sitting.
+
+### Verification (2026-10-25)
+
+Offline harness (bare repos as GitHub, `url.insteadOf`, a stub `gh`, tutor
++ alice + bob + a VPS checkout, a non-Python app): **57 checks, all
+passing** — init of `master`/`deploy` with baked placeholders, joins and
+resume, stage cycle with the test gate and conflict abort, PR create/update,
+three promotions without conflicts, hotfix `--dev` / `--master`, a
+back-port collision, re-runs converging. `scripts/gitflow/dr_rebuild.sh`
+run against a real local Docker stub stack (nginx-based app): build,
+in-image test, 200 check, image cleanup, `--check-only`, prod-compose
+failure path. `shellcheck` was not available (download blocked) — only
+`bash -n`.
+
+Per-OS split (1.2.7, 2026-10-26): the offline harness rewritten per
+variant — **58 checks × 3 variants, all passing** on bash 5 (master init
+from a flat kit and from the nested kit through a symlink, kit checks, joins
+with the OS folder placed in the project folder, a nickname asked for, run
+from another directory, root guards, in-place setup, stage cycle with asked
+arguments, scripts run from outside the project, PR, promote, VPS back-port
+with the mode asked, help texts). The macOS variant also under **bash 3.2**
+(official `bash:3.2` image + BusyBox tools): final run 58/58; two earlier
+runs each missed two help-text checks that 100 direct calls never
+reproduced (harness flakiness in that container, left noted). **Real
+GitHub**, as `consolomon`, one private repo per variant (macOS / Windows
+bash parts on Linux bash, gh 2.4.0, https): init, join, stage, Docker build
++ curl 200, finish, real PR, promote, VPS hotfix `--dev` and `--master`
+(`hotfix/1.1.3` + PR) — **11/11 each**; the repos, containers and images
+were deleted afterwards. Not testable here: the cmd.exe launcher itself and
+a native Mac — the owner's manual test. A first real run failed only because
+this PC reaches GitHub over https, not ssh.
+
+Flat layout (1.2.5): a new offline harness (same stand-ins) — **56 checks,
+all passing**: master init from a flat kit run from another directory
+(flat root: every script, `README.md`, generated `gitflow.conf`, starter
+contents incl. the stage 3 data; no `scripts/`, `MANIFEST`, `_deploy/`;
+baked placeholders; `master` 1.0.0 / `deploy` 1.0.1 pushed), from the
+nested kit through a symlink (default target beside the project), kit
+checks (missing `gitflow.conf`, a clashing `starter/README.md`); joins into
+the current directory (placed identical files, a differing README replaced
+with a backup, a declined replace leaving the folder untouched, a folder
+inside a foreign repository refused, in-place resume inside a clone); stage
+cycle, PR, promote, VPS hotfix back-port `--dev`; every `--help` shows the
+`./<script>.sh` form. It caught one bug: the in-place setup read the origin
+URL through `git remote get-url`, which applies `insteadOf` rewrites — it
+now reads `gitflow.repo` / the raw `remote.origin.url`.
+
+---
+
 ## Summary table
 
 | Action | Command |
@@ -275,7 +416,7 @@ a re-run converging to nothing.
 | Finish feature | `git checkout dev && git merge --no-ff --no-commit feature/name && git commit -m "$(cat VERSION) merge: finish feature/name" && git branch -d feature/name` |
 | Promote to master | `git checkout master && git merge --no-ff --no-commit dev && git commit -m "$(cat VERSION) merge: sync dev → master" && git push origin master` |
 | Promote to deploy | `cp scripts/merge_to_deploy.sh /tmp/ && bash /tmp/merge_to_deploy.sh` |
-| Release | on the VPS: `git pull --ff-only origin deploy && docker compose up -d --build` + end-to-end check |
+| Release | on the VPS: `git pull --ff-only origin deploy && scripts/dr_rebuild.sh` (rebuild + end-to-end check) |
 | VPS hotfix / sync | on the VPS, in Claude Code: `/sync-deploy-vps [subject]`; then `git pull` dev on the dev PC |
 
 ---
@@ -525,6 +666,8 @@ as a separate follow-up task, whenever any of the following happens:
   relevant command examples here;
 - `scripts/merge_to_deploy.sh` (its `DEPLOY_OWNED` / `DEV_ONLY` /
   `DEPLOY_KEEP` arrays are also read by `/sync-deploy-vps`),
+  any `scripts/gitflow/*.sh` script or `scripts/gitflow/starter/` (the
+  "Multi-developer gitflow scripts" section must match them),
   `.claude/commands/sync-deploy-vps.md`, `scripts/next_version.sh`,
   `scripts/dr_rebuild.sh`, or any `.claude/commands/*.md` gitflow script
   changes — this file's command examples must match what they actually do;

@@ -9,9 +9,13 @@
 #               the code baked into the image); a failing step stops here —
 #               the running container is untouched
 #   3. up       recreate the container from the new image
-#   4. health   wait until / answers 200
-#   5. logs     last 10 log lines
-#   6. cleanup  remove the replaced image if nothing uses it any more
+#   4. health   wait until / answers 200 (inside the container)
+#   5. e2e      curl from the host, the request a user makes:
+#               dev compose (master/dev)  http://127.0.0.1:<WEB_HOST_PORT>/ -> 200
+#               prod compose (deploy)     https://$DOMAIN/ -> 200, http://$DOMAIN/ -> 301
+#                                         (DOMAIN from .env, through nginx)
+#   6. logs     last 10 log lines
+#   7. cleanup  remove the replaced image if nothing uses it any more
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -26,6 +30,7 @@ done
 
 compose() { docker compose -f "$REPO/docker-compose.yaml" --project-directory "$REPO" "$@"; }
 step() { printf '\n\033[1m── %s\033[0m\n' "$*"; }
+PROD=""; compose config --services | grep -qx nginx && PROD=1   # deploy's compose has nginx
 image_of() { compose config --format json | python3 -c "import json,sys; print(json.load(sys.stdin)['services']['$1']['image'])"; }
 
 wait_http() {   # poll / from inside the container (python is in the image)
@@ -58,12 +63,31 @@ compose up -d --no-deps --force-recreate "$SVC"
 step "$SVC: health"
 wait_http
 
+expect() {   # expect <url> <code> <seconds>: curl from the host until <url> answers <code>
+  local c=""
+  for _ in $(seq 1 "$3"); do
+    c=$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "$1" || true)
+    if [ "$c" = "$2" ]; then echo "$1 -> $c"; return 0; fi
+    sleep 1
+  done
+  echo "$1 -> $c (expected $2)" >&2; return 1
+}
+step "end-to-end check (curl from the host)"
+if [ -n "$PROD" ]; then
+  DOMAIN=$(grep -E '^DOMAIN=' "$REPO/.env" | cut -d= -f2)
+  expect "https://$DOMAIN/" 200 30 && expect "http://$DOMAIN/" 301 10 \
+    || { compose ps >&2; exit 1; }
+else
+  # gunicorn logs 0.0.0.0 (all interfaces) — not an address to open
+  PORT=$(compose port "$SVC" 8008 | sed 's/.*://')
+  expect "http://127.0.0.1:${PORT}/" 200 30 || exit 1
+fi
+
 step "$SVC: last 10 log lines"
 compose logs --no-log-prefix --tail 10 "$SVC" | sed "s/^/[$SVC] /"
 
-# gunicorn logs 0.0.0.0 (all interfaces) — not an address to open
-PORT=$(compose port "$SVC" 8008 | sed 's/.*://')
-step "$SVC: open http://127.0.0.1:${PORT}/  (or http://localhost:${PORT}/)"
+if [ -n "$PROD" ]; then step "$SVC: live at https://$DOMAIN/"
+else step "$SVC: open http://127.0.0.1:${PORT}/  (or http://localhost:${PORT}/)"; fi
 
 NEW_IMAGE=$(docker image inspect -f '{{.Id}}' "$IMAGE")
 if [ -n "$OLD_IMAGE" ] && [ "$OLD_IMAGE" != "$NEW_IMAGE" ]; then
